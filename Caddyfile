@@ -1,0 +1,20 @@
+# Caddy configuration for automated TLS / Let's Encrypt SSL
+# Replace 'stall.yourdomain.com' with your actual domain pointed to your VPS IP
+
+stall.yourdomain.com {
+    reverse_proxy app:8080
+
+    encode gzip zstd
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}

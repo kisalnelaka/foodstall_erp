@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sumiyuru Catering & Roadside Stall - ERP & Cash Cockpit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            dark: {
+              800: '#1e293b',
+              850: '#172033',
+              900: '#0f172a',
+              950: '#090d16',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+  <!-- TOP EXECUTIVE NAVBAR -->
+  <header class="border-b border-slate-800 bg-dark-900/90 backdrop-blur sticky top-0 z-50 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-bold text-xl">
+        <i class="fa-solid fa-utensils"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-extrabold text-lg tracking-tight text-white">SUMIYURU</h1>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">STALL ERP & CASH COCKPIT</span>
+        </div>
+        <p class="text-xs text-slate-400">Roadside Stall & Catering Management System • Cycle 2 Active</p>
+      </div>
+    </div>
+
+    <!-- LIVE STATUS BADGES -->
+    <div class="flex items-center gap-2 text-xs flex-wrap">
+      <div class="px-2.5 py-1 rounded-lg bg-dark-800 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="systemLiveClock">17:00:00</span>
+      </div>
+      <div class="px-2.5 py-1 rounded-lg bg-emerald-950/60 border border-emerald-700/50 text-emerald-300 font-mono font-medium">
+        Till Float: Rs. 5,000
+      </div>
+      <button onclick="openHandoverModal()" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium shadow transition flex items-center gap-1.5">
+        <i class="fa-solid fa-money-bill-transfer"></i> Handover to Dad
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="bg-dark-900 border-b border-slate-800 px-4 overflow-x-auto custom-scrollbar no-print">
+    <div class="flex gap-1 py-2 min-w-max">
+      <button onclick="switchTab('cockpit')" id="tabBtn-cockpit" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-brand-600 text-white shadow">
+        <i class="fa-solid fa-gauge-high"></i> Executive Cockpit
+      </button>
+      <button onclick="switchTab('pos')" id="tabBtn-pos" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-cash-register"></i> Shift Tally (POS)
+      </button>
+      <button onclick="switchTab('reconcile')" id="tabBtn-reconcile" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-scale-balanced"></i> Cash Reconciliation
+      </button>
+      <button onclick="switchTab('catering')" id="tabBtn-catering" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-calendar-check"></i> Catering CRM
+      </button>
+      <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-boxes-stacked"></i> Par Optimizer
+      </button>
+      <button onclick="switchTab('analytics')" id="tabBtn-analytics" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-chart-pie"></i> Day Analytics & Closure
+      </button>
+      <button onclick="switchTab('printable')" id="tabBtn-printable" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-print"></i> Printable Sheet
+      </button>
+      <button onclick="switchTab('items')" id="tabBtn-items" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-tags"></i> Unit Economics
+      </button>
+      <button onclick="switchTab('playbook')" id="tabBtn-playbook" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-book-bookmark"></i> Playbook & SOPs
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full custom-scrollbar">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: EXECUTIVE COCKPIT -->
+    <!-- ========================================================================= -->
+    <section id="view-cockpit" class="tab-content space-y-6">
+      
+      <!-- TOP 4 BANNER KPIS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1 -->
+        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-4 text-slate-800/50 text-7xl font-black">Rs</div>
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Total Stall Revenue (Cycle 2)</div>
+          <div id="c2-gross-rev" class="text-3xl font-extrabold text-white tracking-tight">Rs. 104,089</div>
+          <div class="mt-2 text-xs text-brand-400 flex items-center gap-1 font-medium">
+            <i class="fa-solid fa-chart-line"></i> <span id="c2-daily-avg">Daily Avg: Rs. 17,348</span> | 6 Active Days
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Physical Cash Reserve</div>
+          <div id="c2-cash-reserve" class="text-3xl font-extrabold text-emerald-400 tracking-tight">Rs. 40,350</div>
+          <div class="mt-2 text-xs text-slate-300 flex items-center gap-1">
+            <i class="fa-solid fa-shield-halved text-emerald-400"></i> 100% Reconciled Till Buffer in Hand
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-gradient-to-br from-dark-900 to-emerald-950/40 border border-emerald-800/40 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="text-xs uppercase tracking-wider text-emerald-400 font-bold mb-1">100% Pure Owner Profit</div>
+          <div id="c2-pure-profit" class="text-3xl font-extrabold text-emerald-300 tracking-tight">Rs. 22,197</div>
+          <div class="mt-2 text-xs text-emerald-400/90 flex items-center gap-1">
+            <i class="fa-solid fa-wallet"></i> Net cash pocketed after kitchen & debts
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Steady-State Run-Rate</div>
+          <div id="c2-run-rate" class="text-3xl font-extrabold text-amber-400 tracking-tight">Rs. 110,985</div>
+          <div class="mt-2 text-xs text-amber-400/90 flex items-center gap-1">
+            <i class="fa-solid fa-fire"></i> Rs. 3,700/day recurring profit potential
+          </div>
+        </div>
+      </div>
+
+      <!-- CASH ENVELOPES & PROFIT ALLOCATION SPLIT -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- LIVE CASH ENVELOPES -->
+        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="text-emerald-400">💰</span> LIVE PHYSICAL CASH ENVELOPES
+            </h2>
+            <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300">Physical drawer cash</span>
+          </div>
+
+          <div class="space-y-3">
+            <!-- Envelope 1 -->
+            <div class="p-4 rounded-xl bg-dark-800/60 border border-slate-700/70 flex items-center justify-between">
+              <div>
+                <div class="font-bold text-sm text-slate-200">[Envelope 1] Tomorrow Morning Suppliers</div>
+                <div class="text-xs text-slate-400">Delish & Nishan morning cash settlement (Nov 9)</div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-lg text-white">Rs. 0</div>
+                <div class="text-[11px] text-emerald-400">Ready for next shift</div>
+              </div>
+            </div>
+
+            <!-- Envelope 2 -->
+            <div class="p-4 rounded-xl bg-dark-800/60 border border-slate-700/70 flex items-center justify-between">
+              <div>
+                <div class="font-bold text-sm text-slate-200">[Envelope 2] Helper Wages Packet</div>
+                <div class="text-xs text-slate-400">Covered via daily operational cash flow buffer</div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-lg text-emerald-400">Rs. 8,400</div>
+                <div class="text-[11px] text-slate-400">Rs. 1,200/day pool</div>
+              </div>
+            </div>
+
+            <!-- Envelope 3 -->
+            <div class="p-4 rounded-xl bg-brand-950/40 border border-brand-800/50 flex items-center justify-between">
+              <div>
+                <div class="font-bold text-sm text-brand-300">[Envelope 3] Master Reserve Heap Total</div>
+                <div class="text-xs text-slate-400">Handed over to Dad at cycle close, resetting to Rs. 0</div>
+              </div>
+              <div class="text-right">
+                <div class="font-extrabold text-xl text-brand-400">Rs. 40,350</div>
+                <div class="text-[11px] text-brand-300 font-medium">100% Reconciled Till Buffer</div>
+              </div>
+            </div>
+
+            <!-- Total Operating Buffer & Physical Cash Total -->
+            <div class="pt-2 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+              <span>Total Operating Buffers Set-Aside: <strong class="text-slate-200">Rs. 8,400</strong></span>
+              <span>Total Physical Till Cash Tracked: <strong class="text-emerald-400">Rs. 48,750</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESERVE ALLOCATION & PURE PROFIT PARTITION -->
+        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="text-brand-400">📊</span> MASTER RESERVE ALLOCATION & OWNER PROFIT
+            </h2>
+            <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300">Liability partition</span>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex justify-between items-center text-sm p-3 rounded-lg bg-dark-800/40 border border-slate-800">
+              <div>
+                <div class="text-slate-300 font-medium">Kitchen Month-End Payable</div>
+                <div class="text-xs text-slate-500">Net of Cycle 2 Pre-Paid Stock (PW Farm & Nirosha Chicken)</div>
+              </div>
+              <div class="text-rose-400 font-mono font-bold text-base">- Rs. 17,151</div>
+            </div>
+
+            <div class="flex justify-between items-center text-sm p-3 rounded-lg bg-dark-800/40 border border-slate-800">
+              <div>
+                <div class="text-slate-300 font-medium">Reserved for Godrej Coffee Premix</div>
+                <div class="text-xs text-slate-500">0 cups sold @ Rs. 50 month-end settlement</div>
+              </div>
+              <div class="text-slate-400 font-mono font-bold text-base">- Rs. 0</div>
+            </div>
+
+            <div class="flex justify-between items-center text-sm p-3 rounded-lg bg-dark-800/40 border border-slate-800">
+              <div>
+                <div class="text-slate-300 font-medium">Electricity & Overheads Reserve</div>
+                <div class="text-xs text-slate-500">6 Active Operating Days @ Rs. 167/day</div>
+              </div>
+              <div class="text-rose-400 font-mono font-bold text-base">- Rs. 1,002</div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-dark-800 border border-emerald-600/50 flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold uppercase tracking-wider text-emerald-400">FREE MEMORY (Pure Owner Profit in Hand)</div>
+                <div class="text-xs text-slate-300 mt-0.5">Net cash yours to keep after all accruals & payables</div>
+              </div>
+              <div class="text-2xl font-black text-emerald-300 font-mono">
+                Rs. 22,197
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 30-DAY FORECAST & RECENT SHIFT SPARKLINE -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 30-Day Projections Table -->
+        <div class="lg:col-span-2 bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
+          <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-brand-400"></i> 30-Day Monthly Run-Rate Forecast & Revenue Projections
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400 font-bold">
+                <tr>
+                  <th class="py-3 px-4">Forecast Metric</th>
+                  <th class="py-3 px-4">Daily Average (6 Days)</th>
+                  <th class="py-3 px-4">30-Day Projected</th>
+                  <th class="py-3 px-4">Operating Logic</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                <tr class="hover:bg-dark-800/40">
+                  <td class="py-3 px-4 font-semibold text-white">Gross Stall Turnover</td>
+                  <td class="py-3 px-4 font-mono text-emerald-400">Rs. 17,348</td>
+                  <td class="py-3 px-4 font-mono font-bold text-emerald-300">Rs. 520,445</td>
+                  <td class="py-3 px-4 text-xs text-slate-400">Steady run-rate on 6-day operational week</td>
+                </tr>
+                <tr class="hover:bg-dark-800/40">
+                  <td class="py-3 px-4 font-semibold text-white">Net Cash to Master Reserve</td>
+                  <td class="py-3 px-4 font-mono text-emerald-400">Rs. 6,725</td>
+                  <td class="py-3 px-4 font-mono font-bold text-emerald-300">Rs. 201,750</td>
+                  <td class="py-3 px-4 text-xs text-slate-400">Cumulative till cash accumulation in envelope</td>
+                </tr>
+                <tr class="hover:bg-dark-800/40 bg-emerald-950/20">
+                  <td class="py-3 px-4 font-semibold text-emerald-300">Pure Owner Net Profit (Conservative)</td>
+                  <td class="py-3 px-4 font-mono text-emerald-400">Rs. 3,700</td>
+                  <td class="py-3 px-4 font-mono font-extrabold text-emerald-300">Rs. 110,985</td>
+                  <td class="py-3 px-4 text-xs text-emerald-400/90">After all supplier settlements, wages & debts</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Revenue Chart -->
+        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-emerald-400"></i> Cycle 2 Daily Trend
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">Gross Revenue vs Net to Reserve</p>
+            <div class="h-48 relative">
+              <canvas id="cycleTrendChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-400 flex justify-between">
+            <span>Peak Revenue: <strong class="text-emerald-400">Rs. 18,940</strong> (Sat)</span>
+            <span>Zero-Variance Audit: <strong class="text-emerald-400">100%</strong></span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: ROADSIDE POS & SHIFT TALLY -->
+    <!-- ========================================================================= -->
+    <section id="view-pos" class="tab-content space-y-6 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-4 rounded-2xl">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-cash-register text-brand-400"></i> Daily Shift Tally & Entry
+          </h2>
+          <p class="text-xs text-slate-400">Mobile-first touch entry for stall cashier. Enter Opening Received & Leftover Unsold.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div>
+            <label class="text-[11px] text-slate-400 uppercase font-bold block mb-1">Shift Date</label>
+            <input type="date" id="posShiftDate" class="bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:border-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[11px] text-slate-400 uppercase font-bold block mb-1">Cashier / Staff</label>
+            <input type="text" id="posCashierName" value="Owner" class="bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:border-brand-500 focus:outline-none w-28">
+          </div>
+          <button onclick="saveShiftTally()" class="mt-4 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Save Shift Tally
+          </button>
+        </div>
+      </div>
+
+      <!-- LIVE TALLY COUNTER CARD -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
+          <div class="text-xs text-slate-400">Total Units Sold</div>
+          <div id="liveTotalUnits" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
+          <div class="text-xs text-slate-400">Total Leftovers</div>
+          <div id="liveTotalLeftovers" class="text-2xl font-bold text-amber-400 mt-1">0</div>
+        </div>
+        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
+          <div class="text-xs text-slate-400">Shift Gross Revenue</div>
+          <div id="liveGrossRevenue" class="text-2xl font-extrabold text-emerald-400 mt-1">Rs. 0</div>
+        </div>
+        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
+          <div class="text-xs text-slate-400">Estimated Total COGS</div>
+          <div id="liveTotalCOGS" class="text-2xl font-extrabold text-slate-300 mt-1">Rs. 0</div>
+        </div>
+      </div>
+
+      <!-- PRODUCT ENTRY LIST ACCORDION BY SUPPLIER -->
+      <div id="posItemGrid" class="space-y-4">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: CASH RECONCILIATION & ENVELOPE COMMITS -->
+    <!-- ========================================================================= -->
+    <section id="view-reconcile" class="tab-content space-y-6 hidden">
+      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-6">
+        <div class="border-b border-slate-800 pb-4 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced text-brand-400"></i> End-of-Shift Cash Reconciliation
+            </h2>
+            <p class="text-xs text-slate-400">Count physical cash in the drawer, balance envelopes, and commit net to Master Reserve.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400">Select Shift:</label>
+            <select id="reconcileShiftSelect" onchange="loadShiftForReconcile(this.value)" class="bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- INPUT FIELDS -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">1. Logged Sales Revenue</label>
+              <div id="recLoggedRevDisplay" class="text-xl font-mono font-bold text-white bg-dark-800/80 px-4 py-2.5 rounded-xl border border-slate-700">Rs. 0</div>
+              <p class="text-[11px] text-slate-500 mt-1">Calculated from items sold in the tally sheet</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">2. Actual Till Cash In (Physical Count)</label>
+              <input type="number" id="recActualCashIn" oninput="calculateReconcileDiff()" placeholder="e.g. 18500" class="w-full bg-dark-800 border-2 border-emerald-500/50 text-emerald-300 font-mono text-xl font-bold rounded-xl px-4 py-2.5 focus:border-emerald-400 focus:outline-none">
+              <p class="text-[11px] text-slate-400 mt-1">All currency notes and coins physically counted in till</p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-dark-800/40 border border-slate-700/80 flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-slate-300">Till Variance (Over / Short)</div>
+                <div class="text-[11px] text-slate-500">Actual Till Cash minus Logged Sales Revenue</div>
+              </div>
+              <div id="recVarianceBadge" class="text-lg font-mono font-black text-emerald-400">Rs. 0</div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">3. [Envelope 1] Morning Suppliers Out</label>
+              <input type="number" id="recMorningSup" oninput="calculateReconcileDiff()" placeholder="e.g. 9000" class="w-full bg-dark-800 border border-slate-700 text-slate-200 font-mono text-base rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
+              <p class="text-[11px] text-slate-500 mt-1">Cash kept in Envelope 1 to pay morning deliveries tomorrow</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">4. [Envelope 2] Helper Wage Set-Aside</label>
+              <input type="number" id="recHelperWage" oninput="calculateReconcileDiff()" placeholder="0 or 1200" class="w-full bg-dark-800 border border-slate-700 text-slate-200 font-mono text-base rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
+              <p class="text-[11px] text-slate-500 mt-1">Daily wage (Rs. 1,200) or Rs. 0 if owner was full-time</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">5. Other Purchases / Expenses Out</label>
+              <input type="number" id="recOtherOut" oninput="calculateReconcileDiff()" placeholder="0" class="w-full bg-dark-800 border border-slate-700 text-slate-200 font-mono text-base rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
+              <p class="text-[11px] text-slate-500 mt-1">Fuel, emergency packaging, chicken restock paid today</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">6. Commit Notes / Expenses Description</label>
+              <input type="text" id="recNotes" placeholder="e.g. Power cut (-270) or Chicken restock (3,000)" class="w-full bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- RECONCILIATION SUMMARY COCKPIT -->
+          <div class="flex flex-col justify-between space-y-6 bg-dark-850 p-6 rounded-2xl border border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-calculator text-brand-400"></i> Cash Flow Formula & Balance
+              </h3>
+              
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-slate-400">Actual Cash Counted:</span>
+                  <span id="summaryActualCash" class="font-mono font-bold text-white">Rs. 0</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-slate-400">(-) Morning Suppliers Envelope:</span>
+                  <span id="summaryMorningSup" class="font-mono text-rose-400">- Rs. 0</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-slate-400">(-) Helper Wage Envelope:</span>
+                  <span id="summaryHelperWage" class="font-mono text-rose-400">- Rs. 0</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-slate-400">(-) Other Expenses Out:</span>
+                  <span id="summaryOtherOut" class="font-mono text-rose-400">- Rs. 0</span>
+                </div>
+                <div class="p-4 rounded-xl bg-brand-950/60 border border-brand-700/60 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs uppercase font-extrabold text-brand-400">DAILY NET TO MASTER RESERVE</div>
+                    <div class="text-[11px] text-slate-300">Net physical cash added into Reserve Envelope</div>
+                  </div>
+                  <div id="summaryNetToReserve" class="text-2xl font-black font-mono text-brand-300">
+                    Rs. 0
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="submitShiftReconciliation()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 text-base">
+              <i class="fa-solid fa-lock"></i> Commit Reconciliation & Lock Shift
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORICAL CASH COMMIT LOG TABLE -->
+      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-base font-bold text-white mb-4 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-brand-400"></i> Daily Cash Commit History</span>
+          <span class="text-xs text-slate-400 font-normal">All 17 reconciled shifts recorded</span>
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-dark-800 text-slate-400 uppercase font-bold">
+              <tr>
+                <th class="py-2.5 px-3">Date</th>
+                <th class="py-2.5 px-3">Logged Sales</th>
+                <th class="py-2.5 px-3">Actual Cash</th>
+                <th class="py-2.5 px-3">Variance</th>
+                <th class="py-2.5 px-3">Morning Sup</th>
+                <th class="py-2.5 px-3">Wage Set-Aside</th>
+                <th class="py-2.5 px-3">Other Out</th>
+                <th class="py-2.5 px-3">Net to Reserve</th>
+                <th class="py-2.5 px-3">Master Reserve</th>
+                <th class="py-2.5 px-3">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="cashCommitTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: CATERING CRM & WHATSAPP ORDERS -->
+    <!-- ========================================================================= -->
+    <section id="view-catering" class="tab-content space-y-6 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-4 rounded-2xl">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-brand-400"></i> Sumiyuru Catering CRM & Order Pipeline
+          </h2>
+          <p class="text-xs text-slate-400">Manage large catering orders, guest counts (pax), advance payments, and generate WhatsApp quotations.</p>
+        </div>
+        <button onclick="openNewCateringModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg transition flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> New Catering Booking
+        </button>
+      </div>
+
+      <!-- PIPELINE STATS -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-dark-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400">Confirmed Orders Value</div>
+          <div id="cateringConfirmedVal" class="text-2xl font-bold text-emerald-400 mt-1">Rs. 64,250</div>
+        </div>
+        <div class="bg-dark-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400">Advances Collected in Hand</div>
+          <div id="cateringAdvancesVal" class="text-2xl font-bold text-brand-400 mt-1">Rs. 30,000</div>
+        </div>
+        <div class="bg-dark-900 border border-slate-800 p-4 rounded-xl">
+          <div class="text-xs text-slate-400">Pending Balances to Collect</div>
+          <div id="cateringPendingVal" class="text-2xl font-bold text-amber-400 mt-1">Rs. 34,250</div>
+        </div>
+      </div>
+
+      <!-- ORDERS LIST -->
+      <div id="cateringOrdersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 5: INVENTORY DEMAND OPTIMIZER -->
+    <!-- ========================================================================= -->
+    <section id="view-inventory" class="tab-content space-y-6 hidden">
+      <div class="bg-dark-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-boxes-stacked text-brand-400"></i> Inventory Demand Optimizer & Par Restock Signals
+            </h2>
+            <p class="text-xs text-slate-400">Data-driven daily ordering targets based on actual sell-through and day-of-week demand.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="px-2 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">🔥 Sell-Out Alerts</span>
+            <span class="px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">⚠️ Waste Alerts</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-dark-800 text-slate-400 text-xs uppercase font-bold">
+              <tr>
+                <th class="py-3 px-4">Item Name</th>
+                <th class="py-3 px-4">Supplier</th>
+                <th class="py-3 px-4">Daily Avg Sold</th>
+                <th class="py-3 px-4">Peak Sold</th>
+                <th class="py-3 px-4">Sell-Through %</th>
+                <th class="py-3 px-4">Mon-Wed Par</th>
+                <th class="py-3 px-4">Thu-Sat Par</th>
+                <th class="py-3 px-4">Sun/Poya Par</th>
+                <th class="py-3 px-4">Action Signal</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryOptimizerTable" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 6: DAY-OF-WEEK ANALYTICS & CLOSURE STRATEGY -->
+    <!-- ========================================================================= -->
+    <section id="view-analytics" class="tab-content space-y-6 hidden">
+      <div class="bg-dark-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-6">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-brand-400"></i> Day-of-Week Performance & Closure Strategy
+          </h2>
+          <p class="text-xs text-slate-400">Identifies the most profitable operating shifts and minimizes food wastage on slow days.</p>
+        </div>
+
+        <!-- STRATEGIC RECOMMENDATION CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-5 rounded-xl bg-rose-950/30 border border-rose-800/40">
+            <div class="text-xs uppercase font-bold text-rose-400 tracking-wider">🎯 Recommended Weekly Rest Day</div>
+            <div class="text-2xl font-black text-white mt-1">CLOSE ON TUESDAY</div>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              Tuesday has the lowest daily revenue (<strong class="text-white">Rs. 15,547</strong>) and highest leftovers (<strong class="text-rose-400">58 units, 10.4% waste rate</strong>). Closing Tuesday saves ~10.4% weekly food waste & overheads without impacting peak cash flow.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-xl bg-emerald-950/30 border border-emerald-800/40">
+            <div class="text-xs uppercase font-bold text-emerald-400 tracking-wider">🛡️ Protected High-Profit Shifts</div>
+            <div class="text-2xl font-black text-white mt-1">NEVER CLOSE THU / FRI / SAT</div>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              Friday and Saturday average <strong class="text-white">Rs. 18,025/day</strong> with strong demand for dinner short eats, fried rice, and cutlets. Keep full staff and increase Delish & Kitchen pars.
+            </p>
+          </div>
+        </div>
+
+        <!-- DAY TABLE -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-dark-800 text-slate-400 text-xs uppercase font-bold">
+              <tr>
+                <th class="py-3 px-4">Day of Week</th>
+                <th class="py-3 px-4">Active Shifts</th>
+                <th class="py-3 px-4">Total Revenue</th>
+                <th class="py-3 px-4">Avg Daily Rev</th>
+                <th class="py-3 px-4">Units Sold</th>
+                <th class="py-3 px-4">Leftovers (Waste)</th>
+                <th class="py-3 px-4">Sell-Through Rate</th>
+                <th class="py-3 px-4">Wastage Rate</th>
+              </tr>
+            </thead>
+            <tbody id="dayOfWeekTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 7: PRINTABLE SHIFT TALLY SHEET (A4) -->
+    <!-- ========================================================================= -->
+    <section id="view-printable" class="tab-content space-y-6 hidden">
+      <div class="flex justify-between items-center bg-dark-900 border border-slate-800 p-4 rounded-2xl no-print">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-print text-brand-400"></i> Printable Shift Tally Sheet
+          </h2>
+          <p class="text-xs text-slate-400">Print blank daily shift worksheets for stall staff to tally stock on paper.</p>
+        </div>
+        <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-print"></i> Print Sheet (A4)
+        </button>
+      </div>
+
+      <!-- PRINTABLE PAPER CONTAINER -->
+      <div id="printableArea" class="bg-white text-black p-8 rounded-2xl shadow-xl max-w-4xl mx-auto font-sans">
+        <div class="border-b-2 border-black pb-3 text-center">
+          <h2 class="text-2xl font-black uppercase tracking-wider">SUMIYURU CATERING & ROADSIDE STALL</h2>
+          <p class="text-xs font-bold text-gray-700 tracking-widest mt-0.5">DAILY SHIFT PHYSICAL TALLY & CASH AUDIT SHEET</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 my-4 text-xs font-semibold border-b border-gray-300 pb-3">
+          <div>Shift Date: ____________________</div>
+          <div>Cashier / Staff: ____________________</div>
+          <div>Till Float: <strong>Rs. 5,000</strong></div>
+        </div>
+
+        <table class="w-full text-left text-xs border border-collapse border-black">
+          <thead>
+            <tr class="bg-gray-100 border-b border-black font-bold">
+              <th class="p-2 border-r border-black">Item / Product</th>
+              <th class="p-2 border-r border-black">Supplier</th>
+              <th class="p-2 border-r border-black text-center w-20">Opening (A)</th>
+              <th class="p-2 border-r border-black text-center w-20">Leftover (B)</th>
+              <th class="p-2 border-r border-black text-center w-20">Sold (A-B)</th>
+              <th class="p-2 border-r border-black text-right w-24">Price (Rs.)</th>
+              <th class="p-2 text-right w-28">Gross (Rs.)</th>
+            </tr>
+          </thead>
+          <tbody id="printableTableBody" class="divide-y divide-black">
+            <!-- Rendered via JS -->
+          </tbody>
+          <tfoot>
+            <tr class="font-bold border-t-2 border-black bg-gray-100">
+              <td colspan="4" class="p-2 border-r border-black text-right">TOTAL SHIFT SALES:</td>
+              <td id="printTotalSoldCell" class="p-2 border-r border-black text-center"></td>
+              <td class="p-2 border-r border-black text-right">Total Rev:</td>
+              <td id="printTotalRevCell" class="p-2 text-right font-black"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Cash Count Box at bottom of printed page -->
+        <div class="grid grid-cols-2 gap-4 mt-6 border border-black p-4 text-xs">
+          <div>
+            <h4 class="font-bold uppercase border-b border-gray-400 pb-1 mb-2">Till Drawer Cash Count</h4>
+            <div class="space-y-1.5 font-mono">
+              <div>Rs. 5,000 x _____ = Rs. _________</div>
+              <div>Rs. 1,000 x _____ = Rs. _________</div>
+              <div>Rs.   500 x _____ = Rs. _________</div>
+              <div>Rs.   100 x _____ = Rs. _________</div>
+              <div>Rs.    50 x _____ = Rs. _________</div>
+              <div>Coins (Rs. 20/10/5/2/1) = Rs. _________</div>
+              <div class="pt-1 font-bold border-t border-black">Total Cash Counted: Rs. ____________</div>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-bold uppercase border-b border-gray-400 pb-1 mb-2">Shift Envelopes & Sign-Off</h4>
+            <div class="space-y-2">
+              <div>Morning Supplier Envelope 1: Rs. ____________</div>
+              <div>Helper Wages Envelope 2: Rs. ____________</div>
+              <div>Net Added to Master Reserve: Rs. ____________</div>
+              <div class="pt-4 flex justify-between">
+                <span>Staff Sign: ____________</span>
+                <span>Owner Verify: ____________</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 8: UNIT ECONOMICS & ITEMS CATALOG -->
+    <!-- ========================================================================= -->
+    <section id="view-items" class="tab-content space-y-6 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-4 rounded-2xl">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-tags text-brand-400"></i> Unit Economics & Product Catalog
+          </h2>
+          <p class="text-xs text-slate-400">Supplier terms, settlement types (Morning_Cash vs Month_End), costs, and profit margins.</p>
+        </div>
+        <button onclick="openNewItemModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> Add New Product
+        </button>
+      </div>
+
+      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-dark-800 text-slate-400 text-xs uppercase font-bold">
+            <tr>
+              <th class="py-3 px-4">Item Name</th>
+              <th class="py-3 px-4">Category</th>
+              <th class="py-3 px-4">Supplier</th>
+              <th class="py-3 px-4">Settlement</th>
+              <th class="py-3 px-4">Unit Cost</th>
+              <th class="py-3 px-4">Selling Price</th>
+              <th class="py-3 px-4">Unit Margin</th>
+              <th class="py-3 px-4">Margin %</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 9: PLAYBOOK & OPERATIONAL SOPS -->
+    <!-- ========================================================================= -->
+    <section id="view-playbook" class="tab-content space-y-6 hidden">
+      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-book-bookmark text-brand-400"></i> Daily Operational Playbook & Supplier Rules
+          </h2>
+          <p class="text-xs text-slate-400">Enforced stall protocols, supplier ordering limits, and cash reconciliation standards.</p>
+        </div>
+
+        <div id="playbookContainer" class="space-y-3">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: HANDOVER TO DAD -->
+  <div id="handoverModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-dark-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-hand-holding-dollar text-amber-400"></i> Master Reserve Handover
+        </h3>
+        <button onclick="closeHandoverModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Date</label>
+          <input type="date" id="handoverDate" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Cycle Number</label>
+          <input type="number" id="handoverCycle" value="3" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Recipient</label>
+          <input type="text" id="handoverTo" value="Dad (Owner Draw)" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Cash Amount (Rs.)</label>
+          <input type="number" id="handoverAmount" placeholder="e.g. 40350" class="w-full bg-dark-800 border-2 border-amber-500/50 text-amber-300 font-mono text-xl font-bold rounded-lg p-2">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Notes</label>
+          <input type="text" id="handoverNotes" value="Handed physical reserve envelope to Dad tonight" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+        <button onclick="closeHandoverModal()" class="px-4 py-2 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded-lg text-sm">Cancel</button>
+        <button onclick="submitHandover()" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-sm shadow">Confirm Handover & Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW CATERING ORDER -->
+  <div id="cateringModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-dark-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-calendar-plus text-brand-400"></i> Book Catering Order
+        </h3>
+        <button onclick="closeCateringModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Client Name</label>
+            <input type="text" id="catName" placeholder="Dr. Bandara" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Phone (WhatsApp)</label>
+            <input type="text" id="catPhone" placeholder="0771234567" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Event Date</label>
+            <input type="date" id="catDate" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Event Time</label>
+            <input type="text" id="catTime" placeholder="12:30 PM" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Guest Count (Pax)</label>
+            <input type="number" id="catPax" oninput="calcCateringTotal()" value="50" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm font-mono">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Price / Pax (Rs.)</label>
+            <input type="number" id="catPricePax" oninput="calcCateringTotal()" value="650" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm font-mono">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Total (Rs.)</label>
+            <input type="number" id="catTotal" readonly class="w-full bg-dark-850 border border-slate-700 text-emerald-400 rounded-lg p-2 text-sm font-bold font-mono">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Advance Deposit Paid (Rs.)</label>
+          <input type="number" id="catAdvance" value="0" class="w-full bg-dark-800 border border-slate-700 text-brand-300 rounded-lg p-2 text-sm font-mono">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Selected Menu Package</label>
+          <textarea id="catMenu" rows="2" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm" placeholder="Mix Fried Rice w/ Leg, Cutlets, Mixed Salad..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Delivery Address & Notes</label>
+          <input type="text" id="catNotes" placeholder="General Hospital Staff Room, 3rd Floor" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+        <button onclick="closeCateringModal()" class="px-4 py-2 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded-lg text-sm">Cancel</button>
+        <button onclick="submitCateringOrder()" class="px-5 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-lg text-sm shadow">Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION CORE SCRIPT -->
+  <script>
+    let appData = {
+      items: [],
+      suppliers: [],
+      shifts: [],
+      cockpit: null,
+      currentShift: null
+    };
+
+    let cycleChartInstance = null;
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', async () => {
+      startLiveClock();
+      setDefaultDates();
+      await loadInitialData();
+    });
+
+    function startLiveClock() {
+      const el = document.getElementById('systemLiveClock');
+      setInterval(() => {
+        const now = new Date();
+        el.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+      }, 1000);
+    }
+
+    function setDefaultDates() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('posShiftDate').value = today;
+      document.getElementById('handoverDate').value = today;
+      document.getElementById('catDate').value = today;
+    }
+
+    async function loadInitialData() {
+      try {
+        const [itemsRes, cockpitRes, shiftsRes, invRes, dowRes, catRes, pbRes] = await Promise.all([
+          fetch('/api/items').then(r => r.json()),
+          fetch('/api/dashboard/cockpit').then(r => r.json()),
+          fetch('/api/shifts').then(r => r.json()),
+          fetch('/api/inventory/optimizer').then(r => r.json()),
+          fetch('/api/analytics/day-of-week').then(r => r.json()),
+          fetch('/api/catering').then(r => r.json()),
+          fetch('/api/playbook').then(r => r.json())
+        ]);
+
+        appData.items = itemsRes;
+        appData.cockpit = cockpitRes;
+        appData.shifts = shiftsRes;
+        appData.inventory = invRes;
+        appData.dow = dowRes;
+        appData.catering = catRes;
+        appData.playbook = pbRes;
+
+        renderCockpit();
+        renderPOSItems();
+        renderReconcileDropdown();
+        renderCashCommitTable();
+        renderInventoryTable();
+        renderDayOfWeekTable();
+        renderPrintableSheet();
+        renderItemsTable();
+        renderPlaybook();
+        renderCateringCards();
+      } catch (err) {
+        console.error("Failed to load initial data", err);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // TAB NAVIGATION
+    // -------------------------------------------------------------------------
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white', 'shadow');
+        btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-dark-800');
+      });
+
+      const targetView = document.getElementById(`view-${tabId}`);
+      const targetBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (targetView) targetView.classList.remove('hidden');
+      if (targetBtn) {
+        targetBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-dark-800');
+        targetBtn.classList.add('bg-brand-600', 'text-white', 'shadow');
+      }
+
+      if (tabId === 'cockpit' && appData.cockpit) {
+        renderCockpitChart();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // COCKPIT VIEW
+    // -------------------------------------------------------------------------
+    function renderCockpit() {
+      const c = appData.cockpit;
+      if (!c) return;
+
+      document.getElementById('c2-gross-rev').innerText = `Rs. ${c.cycle.gross_revenue.toLocaleString()}`;
+      document.getElementById('c2-daily-avg').innerText = `Daily Avg: Rs. ${Math.round(c.cycle.daily_average).toLocaleString()}`;
+      document.getElementById('c2-cash-reserve').innerText = `Rs. ${c.envelopes.envelope_3_master_reserve.balance.toLocaleString()}`;
+      document.getElementById('c2-pure-profit').innerText = `Rs. ${Math.round(c.envelopes.allocations.pure_unencumbered_owner_profit).toLocaleString()}`;
+      document.getElementById('c2-run-rate').innerText = `Rs. ${Math.round(c.projections.owner_profit_30d).toLocaleString()}`;
+
+      renderCockpitChart();
+    }
+
+    function renderCockpitChart() {
+      const ctx = document.getElementById('cycleTrendChart');
+      if (!ctx) return;
+      if (cycleChartInstance) cycleChartInstance.destroy();
+
+      // Filter Cycle 2 shifts (Nov 3 to Nov 8)
+      const shifts = appData.shifts.filter(s => s.date >= '2026-11-03' && s.date <= '2026-11-08').reverse();
+      const labels = shifts.map(s => s.date.slice(5));
+      const grossData = shifts.map(s => s.total_gross_revenue);
+      const reserveData = shifts.map(s => s.daily_net_to_reserve);
+
+      cycleChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Gross Rev',
+              data: grossData,
+              backgroundColor: '#10b981',
+              borderRadius: 6
+            },
+            {
+              label: 'Net to Reserve',
+              data: reserveData,
+              backgroundColor: '#3b82f6',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10 } } }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // POS / SHIFT TALLY VIEW
+    // -------------------------------------------------------------------------
+    function renderPOSItems() {
+      const container = document.getElementById('posItemGrid');
+      container.innerHTML = '';
+
+      // Group items by supplier
+      const grouped = {};
+      appData.items.forEach(it => {
+        if (!grouped[it.supplier_name]) grouped[it.supplier_name] = [];
+        grouped[it.supplier_name].push(it);
+      });
+
+      for (const [supplier, items] of Object.entries(grouped)) {
+        const card = document.createElement('div');
+        card.className = 'bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3';
+        
+        let header = `
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h3 class="font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
+              ${supplier}
+            </h3>
+            <span class="text-xs text-slate-400 font-mono">${items[0].settlement_type}</span>
+          </div>
+          <div class="space-y-2">
+        `;
+
+        items.forEach(it => {
+          header += `
+            <div class="p-3 bg-dark-850 rounded-xl border border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+              <div class="min-w-[140px]">
+                <div class="font-bold text-sm text-slate-100">${it.name}</div>
+                <div class="text-xs text-brand-400 font-mono">Sell: Rs. ${it.selling_price} | Cost: Rs. ${it.unit_cost}</div>
+              </div>
+
+              <!-- QUANTITY INPUTS -->
+              <div class="flex items-center gap-3">
+                <div class="text-center">
+                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Opening (A)</span>
+                  <input type="number" id="start_${it.id}" value="0" min="0" oninput="updateItemSold(${it.id})" class="w-16 bg-dark-800 border border-slate-700 text-center text-white rounded-lg py-1 font-mono font-bold">
+                </div>
+
+                <div class="text-center">
+                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Leftover (B)</span>
+                  <input type="number" id="left_${it.id}" value="0" min="0" oninput="updateItemSold(${it.id})" class="w-16 bg-dark-800 border border-slate-700 text-center text-amber-400 rounded-lg py-1 font-mono font-bold">
+                </div>
+
+                <div class="text-center min-w-[60px]">
+                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Sold</span>
+                  <span id="sold_${it.id}" class="text-sm font-black font-mono text-emerald-400">0</span>
+                </div>
+
+                <div class="text-right min-w-[80px]">
+                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Gross Rev</span>
+                  <span id="rev_${it.id}" class="text-sm font-bold font-mono text-white">Rs. 0</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        header += `</div>`;
+        card.innerHTML = header;
+        container.appendChild(card);
+      }
+    }
+
+    function updateItemSold(itemId) {
+      const it = appData.items.find(i => i.id === itemId);
+      if (!it) return;
+
+      const start = parseInt(document.getElementById(`start_${itemId}`).value) || 0;
+      const left = parseInt(document.getElementById(`left_${itemId}`).value) || 0;
+      const sold = Math.max(0, start - left);
+      const rev = sold * it.selling_price;
+
+      document.getElementById(`sold_${itemId}`).innerText = sold;
+      document.getElementById(`rev_${itemId}`).innerText = `Rs. ${rev.toLocaleString()}`;
+
+      recalcShiftTotals();
+    }
+
+    function recalcShiftTotals() {
+      let totalUnits = 0;
+      let totalLeft = 0;
+      let totalGross = 0;
+      let totalCOGS = 0;
+
+      appData.items.forEach(it => {
+        const start = parseInt(document.getElementById(`start_${it.id}`)?.value) || 0;
+        const left = parseInt(document.getElementById(`left_${it.id}`)?.value) || 0;
+        const sold = Math.max(0, start - left);
+
+        totalUnits += sold;
+        totalLeft += left;
+        totalGross += sold * it.selling_price;
+        totalCOGS += sold * it.unit_cost;
+      });
+
+      document.getElementById('liveTotalUnits').innerText = totalUnits.toLocaleString();
+      document.getElementById('liveTotalLeftovers').innerText = totalLeft.toLocaleString();
+      document.getElementById('liveGrossRevenue').innerText = `Rs. ${totalGross.toLocaleString()}`;
+      document.getElementById('liveTotalCOGS').innerText = `Rs. ${totalCOGS.toLocaleString()}`;
+    }
+
+    async function saveShiftTally() {
+      const shiftDate = document.getElementById('posShiftDate').value;
+      const cashier = document.getElementById('posCashierName').value;
+
+      const itemsPayload = [];
+      appData.items.forEach(it => {
+        const start = parseInt(document.getElementById(`start_${it.id}`)?.value) || 0;
+        const left = parseInt(document.getElementById(`left_${it.id}`)?.value) || 0;
+        if (start > 0 || left > 0) {
+          itemsPayload.push({
+            item_id: it.id,
+            start_qty: start,
+            leftover_qty: left
+          });
+        }
+      });
+
+      try {
+        const res = await fetch('/api/shifts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date: shiftDate,
+            cashier_name: cashier,
+            status: 'Active',
+            items: itemsPayload
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`✅ Shift for ${shiftDate} saved successfully!\nTotal Sales: Rs. ${result.total_gross_revenue.toLocaleString()}`);
+          await loadInitialData();
+        } else {
+          alert('Error saving shift: ' + result.error);
+        }
+      } catch (e) {
+        alert('Network or server error: ' + e);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // RECONCILIATION VIEW
+    // -------------------------------------------------------------------------
+    function renderReconcileDropdown() {
+      const select = document.getElementById('reconcileShiftSelect');
+      select.innerHTML = '';
+      appData.shifts.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.innerText = `${s.date} (Rs. ${s.total_gross_revenue.toLocaleString()})`;
+        select.appendChild(opt);
+      });
+
+      if (appData.shifts.length > 0) {
+        loadShiftForReconcile(appData.shifts[0].id);
+      }
+    }
+
+    function loadShiftForReconcile(shiftId) {
+      const s = appData.shifts.find(sh => sh.id == shiftId);
+      if (!s) return;
+
+      document.getElementById('recLoggedRevDisplay').innerText = `Rs. ${s.total_gross_revenue.toLocaleString()}`;
+      document.getElementById('recActualCashIn').value = s.actual_till_cash_in || s.total_gross_revenue;
+      document.getElementById('recMorningSup').value = s.morning_suppliers_out || 0;
+      document.getElementById('recHelperWage').value = s.helper_wage_out || 0;
+      document.getElementById('recOtherOut').value = s.other_purchases_out || 0;
+      document.getElementById('recNotes').value = s.notes || '';
+
+      calculateReconcileDiff();
+    }
+
+    function calculateReconcileDiff() {
+      const shiftId = document.getElementById('reconcileShiftSelect').value;
+      const s = appData.shifts.find(sh => sh.id == shiftId);
+      if (!s) return;
+
+      const loggedRev = s.total_gross_revenue;
+      const actualCash = parseFloat(document.getElementById('recActualCashIn').value) || 0;
+      const morningSup = parseFloat(document.getElementById('recMorningSup').value) || 0;
+      const helperWage = parseFloat(document.getElementById('recHelperWage').value) || 0;
+      const otherOut = parseFloat(document.getElementById('recOtherOut').value) || 0;
+
+      const variance = actualCash - loggedRev;
+      const netToReserve = actualCash - morningSup - helperWage - otherOut;
+
+      const badge = document.getElementById('recVarianceBadge');
+      if (variance === 0) {
+        badge.innerText = 'Rs. 0 (Balanced)';
+        badge.className = 'text-lg font-mono font-black text-emerald-400';
+      } else if (variance > 0) {
+        badge.innerText = `+ Rs. ${variance.toLocaleString()} (Over)`;
+        badge.className = 'text-lg font-mono font-black text-brand-400';
+      } else {
+        badge.innerText = `- Rs. ${Math.abs(variance).toLocaleString()} (Short)`;
+        badge.className = 'text-lg font-mono font-black text-rose-400';
+      }
+
+      document.getElementById('summaryActualCash').innerText = `Rs. ${actualCash.toLocaleString()}`;
+      document.getElementById('summaryMorningSup').innerText = `- Rs. ${morningSup.toLocaleString()}`;
+      document.getElementById('summaryHelperWage').innerText = `- Rs. ${helperWage.toLocaleString()}`;
+      document.getElementById('summaryOtherOut').innerText = `- Rs. ${otherOut.toLocaleString()}`;
+      document.getElementById('summaryNetToReserve').innerText = `Rs. ${netToReserve.toLocaleString()}`;
+    }
+
+    async function submitShiftReconciliation() {
+      const shiftId = document.getElementById('reconcileShiftSelect').value;
+      const actualCash = parseFloat(document.getElementById('recActualCashIn').value) || 0;
+      const morningSup = parseFloat(document.getElementById('recMorningSup').value) || 0;
+      const helperWage = parseFloat(document.getElementById('recHelperWage').value) || 0;
+      const otherOut = parseFloat(document.getElementById('recOtherOut').value) || 0;
+      const notes = document.getElementById('recNotes').value;
+
+      try {
+        const res = await fetch(`/api/shifts/${shiftId}/reconcile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            actual_till_cash_in: actualCash,
+            morning_suppliers_out: morningSup,
+            helper_wage_out: helperWage,
+            other_purchases_out: otherOut,
+            notes: notes
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert('✅ Shift Reconciliation Committed to Master Reserve!');
+          await loadInitialData();
+        } else {
+          alert('Error: ' + result.error);
+        }
+      } catch (e) {
+        alert('Network error: ' + e);
+      }
+    }
+
+    function renderCashCommitTable() {
+      const tbody = document.getElementById('cashCommitTableBody');
+      tbody.innerHTML = '';
+
+      appData.shifts.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-dark-800/40';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-semibold text-white">${s.date}</td>
+          <td class="py-2.5 px-3 text-slate-300">Rs. ${s.total_gross_revenue.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-emerald-400 font-bold">Rs. ${s.actual_till_cash_in.toLocaleString()}</td>
+          <td class="py-2.5 px-3 ${s.till_variance < 0 ? 'text-rose-400' : 'text-slate-300'}">Rs. ${s.till_variance.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-slate-400">Rs. ${s.morning_suppliers_out.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-slate-400">Rs. ${s.helper_wage_out.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-slate-400">Rs. ${s.other_purchases_out.toLocaleString()}</td>
+          <td class="py-2.5 px-3 font-bold text-brand-300">Rs. ${s.daily_net_to_reserve.toLocaleString()}</td>
+          <td class="py-2.5 px-3 font-extrabold text-brand-400">Rs. ${s.master_reserve_balance.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-xs text-slate-400 max-w-xs truncate">${s.notes || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // CATERING CRM
+    // -------------------------------------------------------------------------
+    function renderCateringCards() {
+      const container = document.getElementById('cateringOrdersList');
+      container.innerHTML = '';
+
+      appData.catering.forEach(order => {
+        const card = document.createElement('div');
+        card.className = 'bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-4';
+
+        const whatsappText = encodeURIComponent(
+          `*Sumiyuru Catering Quotation & Booking Confirmation*\n\n` +
+          `Hello ${order.customer_name},\n` +
+          `Event: ${order.event_type}\n` +
+          `Date: ${order.event_date} at ${order.event_time || 'TBD'}\n` +
+          `Pax: ${order.pax_count} persons (@ Rs. ${order.price_per_pax}/pax)\n` +
+          `Total Amount: Rs. ${order.total_amount.toLocaleString()}\n` +
+          `Advance Paid: Rs. ${order.advance_paid.toLocaleString()}\n` +
+          `Balance Due: Rs. ${(order.total_amount - order.advance_paid).toLocaleString()}\n\n` +
+          `Menu: ${order.menu_description}\n\n` +
+          `Thank you for choosing Sumiyuru Catering!`
+        );
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="font-bold text-white text-base">${order.customer_name}</h3>
+                <div class="text-xs text-slate-400 font-mono">${order.phone}</div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${
+                order.order_status === 'Confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+              }">
+                ${order.order_status}
+              </span>
+            </div>
+
+            <div class="mt-3 space-y-2 text-xs text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Event Date:</span>
+                <span class="font-bold text-white">${order.event_date} (${order.event_time || ''})</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Pax Count:</span>
+                <span class="font-bold text-emerald-400">${order.pax_count} pax (@ Rs. ${order.price_per_pax})</span>
+              </div>
+              <div class="flex justify-between border-t border-slate-800 pt-1">
+                <span class="text-slate-400">Total:</span>
+                <span class="font-mono font-bold text-white">Rs. ${order.total_amount.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Advance Paid:</span>
+                <span class="font-mono font-bold text-brand-300">Rs. ${order.advance_paid.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between font-bold">
+                <span class="text-slate-400">Balance Due:</span>
+                <span class="font-mono text-amber-400">Rs. ${(order.total_amount - order.advance_paid).toLocaleString()}</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-dark-850 border border-slate-800 text-[11px] text-slate-300 mt-2">
+                <strong>Menu:</strong> ${order.menu_description}
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800 flex gap-2">
+            <a href="https://wa.me/94${order.phone.replace(/^0/, '')}?text=${whatsappText}" target="_blank" class="flex-1 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition">
+              <i class="fa-brands fa-whatsapp text-sm"></i> Send Quote
+            </a>
+            <button onclick="deleteCateringOrder(${order.id})" class="px-3 py-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-800/40 text-rose-300 rounded-xl text-xs">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function openNewCateringModal() {
+      document.getElementById('cateringModal').classList.remove('hidden');
+    }
+
+    function closeCateringModal() {
+      document.getElementById('cateringModal').classList.add('hidden');
+    }
+
+    function calcCateringTotal() {
+      const pax = parseInt(document.getElementById('catPax').value) || 0;
+      const price = parseFloat(document.getElementById('catPricePax').value) || 0;
+      document.getElementById('catTotal').value = pax * price;
+    }
+
+    async function submitCateringOrder() {
+      const payload = {
+        customer_name: document.getElementById('catName').value,
+        phone: document.getElementById('catPhone').value,
+        event_date: document.getElementById('catDate').value,
+        event_time: document.getElementById('catTime').value,
+        pax_count: parseInt(document.getElementById('catPax').value) || 50,
+        price_per_pax: parseFloat(document.getElementById('catPricePax').value) || 600,
+        total_amount: parseFloat(document.getElementById('catTotal').value) || 30000,
+        advance_paid: parseFloat(document.getElementById('catAdvance').value) || 0,
+        menu_description: document.getElementById('catMenu').value,
+        notes: document.getElementById('catNotes').value
+      };
+
+      try {
+        const res = await fetch('/api/catering', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.success) {
+          closeCateringModal();
+          alert('✅ Catering booking created!');
+          await loadInitialData();
+        } else {
+          alert('Error: ' + result.error);
+        }
+      } catch (e) {
+        alert('Network error: ' + e);
+      }
+    }
+
+    async function deleteCateringOrder(id) {
+      if (!confirm('Are you sure you want to delete this catering order?')) return;
+      try {
+        await fetch(`/api/catering/${id}`, { method: 'DELETE' });
+        await loadInitialData();
+      } catch (e) {
+        alert('Error deleting order: ' + e);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // INVENTORY OPTIMIZER VIEW
+    // -------------------------------------------------------------------------
+    function renderInventoryTable() {
+      const tbody = document.getElementById('inventoryOptimizerTable');
+      tbody.innerHTML = '';
+
+      appData.inventory.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-dark-800/40';
+
+        const isSellOut = r.action_signal && r.action_signal.includes('100%');
+        const isWaste = r.action_signal && r.action_signal.includes('waste');
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-white">${r.item_name}</td>
+          <td class="py-3 px-4 text-slate-400">${r.supplier_name}</td>
+          <td class="py-3 px-4 font-mono">${r.avg_daily_sold}</td>
+          <td class="py-3 px-4 font-mono font-bold text-emerald-400">${r.peak_sold}</td>
+          <td class="py-3 px-4 font-mono">${r.sell_through_pct}%</td>
+          <td class="py-3 px-4 font-mono text-slate-300">${r.mon_wed_target}</td>
+          <td class="py-3 px-4 font-mono font-bold text-brand-300">${r.thu_sat_target}</td>
+          <td class="py-3 px-4 font-mono text-slate-300">${r.sun_poya_target}</td>
+          <td class="py-3 px-4 text-xs font-semibold ${isSellOut ? 'text-amber-400' : isWaste ? 'text-rose-400' : 'text-slate-300'}">${r.action_signal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // DAY-OF-WEEK VIEW
+    // -------------------------------------------------------------------------
+    function renderDayOfWeekTable() {
+      const tbody = document.getElementById('dayOfWeekTableBody');
+      tbody.innerHTML = '';
+
+      appData.dow.days.forEach(d => {
+        const tr = document.createElement('tr');
+        const isTue = d.day_name === 'Tuesday';
+        const isPeak = ['Thursday', 'Friday', 'Saturday'].includes(d.day_name);
+
+        tr.className = isTue ? 'bg-rose-950/20 hover:bg-rose-950/30' : isPeak ? 'bg-emerald-950/20 hover:bg-emerald-950/30' : 'hover:bg-dark-800/40';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold ${isTue ? 'text-rose-400' : isPeak ? 'text-emerald-400' : 'text-white'}">${d.day_name}</td>
+          <td class="py-3 px-4">${d.active_days} days</td>
+          <td class="py-3 px-4">Rs. ${d.total_revenue.toLocaleString()}</td>
+          <td class="py-3 px-4 font-bold ${isTue ? 'text-rose-300' : 'text-white'}">Rs. ${d.avg_revenue.toLocaleString()}</td>
+          <td class="py-3 px-4">${d.total_sold}</td>
+          <td class="py-3 px-4 font-bold ${d.total_leftovers > 20 ? 'text-rose-400' : 'text-slate-400'}">${d.total_leftovers}</td>
+          <td class="py-3 px-4">${d.sell_through_rate}%</td>
+          <td class="py-3 px-4 font-bold ${d.wastage_rate > 8 ? 'text-rose-400' : 'text-slate-300'}">${d.wastage_rate}%</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // PRINTABLE TALLY SHEET VIEW
+    // -------------------------------------------------------------------------
+    function renderPrintableSheet() {
+      const tbody = document.getElementById('printableTableBody');
+      tbody.innerHTML = '';
+
+      appData.items.forEach(it => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-300';
+        tr.innerHTML = `
+          <td class="p-2 border-r border-black font-semibold">${it.name}</td>
+          <td class="p-2 border-r border-black text-gray-700">${it.supplier_name}</td>
+          <td class="p-2 border-r border-black text-center"></td>
+          <td class="p-2 border-r border-black text-center"></td>
+          <td class="p-2 border-r border-black text-center"></td>
+          <td class="p-2 border-r border-black text-right font-mono">Rs. ${it.selling_price}</td>
+          <td class="p-2 text-right"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // ITEMS CATALOG VIEW
+    // -------------------------------------------------------------------------
+    function renderItemsTable() {
+      const tbody = document.getElementById('itemsTableBody');
+      tbody.innerHTML = '';
+
+      appData.items.forEach(it => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-dark-800/40';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-white">${it.name}</td>
+          <td class="py-3 px-4 text-slate-400">${it.category}</td>
+          <td class="py-3 px-4 text-brand-300">${it.supplier_name}</td>
+          <td class="py-3 px-4 text-slate-400">${it.settlement_type}</td>
+          <td class="py-3 px-4 text-slate-300">Rs. ${it.unit_cost}</td>
+          <td class="py-3 px-4 text-white font-bold">Rs. ${it.selling_price}</td>
+          <td class="py-3 px-4 text-emerald-400 font-bold">Rs. ${it.unit_margin}</td>
+          <td class="py-3 px-4 text-emerald-300">${it.margin_pct}%</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // PLAYBOOK VIEW
+    // -------------------------------------------------------------------------
+    function renderPlaybook() {
+      const container = document.getElementById('playbookContainer');
+      container.innerHTML = '';
+
+      appData.playbook.forEach(rule => {
+        const div = document.createElement('div');
+        div.className = 'p-4 rounded-xl bg-dark-850 border border-slate-800 flex items-start gap-3';
+        div.innerHTML = `
+          <span class="px-2.5 py-1 rounded text-xs font-bold uppercase ${
+            rule.priority === 'HIGH' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
+          }">${rule.priority}</span>
+          <div class="flex-1">
+            <div class="font-bold text-white text-sm">${rule.category}</div>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">${rule.rule_description}</p>
+            <div class="mt-2 text-[11px] text-brand-400 flex items-center gap-1">
+              <i class="fa-solid fa-bullseye"></i> Target Impact: ${rule.target_impact}
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // HANDOVER MODAL
+    // -------------------------------------------------------------------------
+    function openHandoverModal() {
+      document.getElementById('handoverAmount').value = appData.cockpit ? appData.cockpit.envelopes.envelope_3_master_reserve.balance : 40350;
+      document.getElementById('handoverModal').classList.remove('hidden');
+    }
+
+    function closeHandoverModal() {
+      document.getElementById('handoverModal').classList.add('hidden');
+    }
+
+    async function submitHandover() {
+      const payload = {
+        date: document.getElementById('handoverDate').value,
+        cycle_number: parseInt(document.getElementById('handoverCycle').value) || 3,
+        handover_to: document.getElementById('handoverTo').value,
+        amount: parseFloat(document.getElementById('handoverAmount').value) || 0,
+        notes: document.getElementById('handoverNotes').value
+      };
+
+      try {
+        const res = await fetch('/api/reserve/handover', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.success) {
+          closeHandoverModal();
+          alert(`✅ Handover of Rs. ${payload.amount.toLocaleString()} to ${payload.handover_to} logged successfully!`);
+          await loadInitialData();
+        } else {
+          alert('Error: ' + result.error);
+        }
+      } catch (e) {
+        alert('Network error: ' + e);
+      }
+    }
+  </script>
+</body>
+</html>

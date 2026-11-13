@@ -1,0 +1,17 @@
+[Unit]
+Description=Sumiyuru Stall ERP & Cash Cockpit Web Application
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/sumiyuru-stall-erp
+ExecStart=/usr/bin/python3 /opt/sumiyuru-stall-erp/server.py
+Restart=always
+RestartSec=5
+Environment=PORT=8080
+Environment=HOST=0.0.0.0
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
