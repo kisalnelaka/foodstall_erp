@@ -82,7 +82,7 @@ Roadside stall economics in Sri Lanka operate on hard currency till integrity. E
 ### 1. Transfer Project to VPS
 From your local terminal, transfer the repository to your VPS:
 ```bash
-rsync -avz --exclude '.git' /home/kisalnelaka/.gemini/antigravity/scratch/sumiyuru-stall-erp/ root@<YOUR_VPS_IP>:/opt/sumiyuru-stall-erp/
+rsync -avz --exclude '.git' /home/kisalnelaka/Work/foodstall_erp/ root@<YOUR_VPS_IP>:/opt/sumiyuru-stall-erp/
 ```
 
 ### 2. Automated Single-Command Deploy
