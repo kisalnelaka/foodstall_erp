@@ -4,6 +4,7 @@ Production-grade asynchronous web server and REST API powered by aiohttp and SQL
 """
 
 import asyncio
+import base64
 from datetime import datetime, date
 import json
 import logging
@@ -979,23 +980,27 @@ async def auth_middleware(request: web.Request, handler):
     expected_user = env_user or "admin"
     expected_pass = env_pass or "sumiyuru2026"
 
-    auth_header = request.headers.get("Authorization")
+    auth_header = request.headers.get("Authorization") or request.headers.get("authorization")
+    authenticated = False
+
     if auth_header and auth_header.startswith("Basic "):
-        import base64
         try:
             encoded_creds = auth_header.split(" ", 1)[1].strip()
             decoded = base64.b64decode(encoded_creds).decode("utf-8")
             username, password = decoded.split(":", 1)
             if username == expected_user and password == expected_pass:
-                return await handler(request)
-        except Exception:
-            pass
+                authenticated = True
+        except Exception as e:
+            logger.warning(f"Malformed Basic Auth token: {e}")
 
-    return web.Response(
-        status=401,
-        headers={"WWW-Authenticate": 'Basic realm="Sumiyuru Stall ERP"'},
-        text="401 Unauthorized: Valid credentials required to access Sumiyuru ERP."
-    )
+    if not authenticated:
+        return web.Response(
+            status=401,
+            headers={"WWW-Authenticate": 'Basic realm="Sumiyuru Stall ERP"'},
+            text="401 Unauthorized: Valid credentials required to access Sumiyuru ERP."
+        )
+
+    return await handler(request)
 
 
 def create_app() -> web.Application:

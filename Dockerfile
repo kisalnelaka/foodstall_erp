@@ -23,9 +23,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application codebase
-COPY db.py server.py ./
+COPY db.py server.py receipt_parser.py ./
 COPY static/ ./static/
-COPY data/ ./data/
 
 # Create unprivileged application user
 RUN useradd -m -u 1000 sumiyuru && \
