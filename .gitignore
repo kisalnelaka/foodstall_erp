@@ -37,3 +37,4 @@ data/sumiyuru.db
 Thumbs.db
 .vscode/
 .idea/
+data/receipts/*
