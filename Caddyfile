@@ -1,5 +1,7 @@
-# Caddy configuration with automated Let's Encrypt TLS for LogHorizon VPS
-foodstall.loghorizon.live {
+# Caddy configuration for automated TLS / Let's Encrypt SSL
+# Replace 'stall.yourdomain.com' with your actual domain pointed to your VPS IP
+
+stall.yourdomain.com {
     reverse_proxy app:8080
 
     encode gzip zstd
@@ -15,9 +17,4 @@ foodstall.loghorizon.live {
         output stdout
         format console
     }
-}
-
-# Local / direct IP fallback on HTTP
-:80 {
-    reverse_proxy app:8080
 }
