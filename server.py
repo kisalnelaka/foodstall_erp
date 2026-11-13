@@ -4,6 +4,7 @@ Production-grade asynchronous web server and REST API powered by aiohttp and SQL
 """
 
 import asyncio
+import base64
 from datetime import datetime, date
 import json
 import logging
