@@ -271,6 +271,17 @@ def seed_from_sheets_json() -> None:
                         INSERT INTO cash_envelope_handovers (date, cycle_number, handover_to, amount, notes)
                         VALUES (?, ?, 'Dad (Owner Reserve)', ?, ?)
                     """, (clean_date, cycle_num, handover_amt, notes))
+                    conn.execute("""
+                        INSERT INTO daily_shifts (
+                            date, status, other_purchases_out, daily_net_to_reserve, master_reserve_balance, notes
+                        ) VALUES (?, 'Settlement_Reset', ?, ?, 0.0, ?)
+                        ON CONFLICT(date) DO UPDATE SET
+                            status = excluded.status,
+                            other_purchases_out = excluded.other_purchases_out,
+                            daily_net_to_reserve = excluded.daily_net_to_reserve,
+                            master_reserve_balance = 0.0,
+                            notes = excluded.notes
+                    """, (date_str, handover_amt, -handover_amt, notes))
                     cycle_num += 1
                     continue
                 

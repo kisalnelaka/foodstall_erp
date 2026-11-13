@@ -149,11 +149,11 @@
         <!-- Tile 2 -->
         <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Physical Reserve</span>
-            <span class="text-xs text-accent-emerald font-mono">100%</span>
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Live Reserve</span>
+            <span class="text-xs text-accent-emerald font-mono">Cycle 3</span>
           </div>
-          <div id="c2-cash-reserve" class="text-xl md:text-2xl font-bold font-mono text-accent-emerald mt-2">Rs. 40,350</div>
-          <div class="mt-1 text-[11px] text-slate-400">Reconciled till buffer</div>
+          <div id="c2-cash-reserve" class="text-xl md:text-2xl font-bold font-mono text-accent-emerald mt-2">Rs. 0</div>
+          <div id="c2-cash-reserve-note" class="mt-1 text-[11px] text-slate-400">Nov 8 Handover Settled (Rs. 40,350 to Dad)</div>
         </div>
 
         <!-- Tile 3 -->
@@ -1158,7 +1158,13 @@
 
       document.getElementById('c2-gross-rev').innerText = `Rs. ${c.cycle.gross_revenue.toLocaleString()}`;
       document.getElementById('c2-daily-avg').innerText = `Avg: Rs. ${Math.round(c.cycle.daily_average).toLocaleString()}/d`;
-      document.getElementById('c2-cash-reserve').innerText = `Rs. ${c.envelopes.envelope_3_master_reserve.balance.toLocaleString()}`;
+      
+      const resBal = c.envelopes.envelope_3_master_reserve.balance || 0;
+      document.getElementById('c2-cash-reserve').innerText = `Rs. ${resBal.toLocaleString()}`;
+      if (resBal === 0) {
+        document.getElementById('c2-cash-reserve-note').innerText = 'Handed over on Nov 8 (Rs. 40,350 to Dad) • Rs. 0 live';
+      }
+
       document.getElementById('c2-pure-profit').innerText = `Rs. ${Math.round(c.envelopes.allocations.pure_unencumbered_owner_profit).toLocaleString()}`;
       document.getElementById('c2-run-rate').innerText = `Rs. ${Math.round(c.projections.owner_profit_30d).toLocaleString()}`;
 

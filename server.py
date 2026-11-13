@@ -92,9 +92,9 @@ async def handle_cockpit(request: web.Request) -> web.Response:
 
         # Current live envelopes (Cycle 2 handover & live balance)
         last_shift = shifts[-1] if shifts else None
-        current_reserve_balance = 40350.0  # As of Cycle 2 handover
+        current_reserve_balance = 0.0
         if last_shift and last_shift["master_reserve_balance"] is not None:
-            current_reserve_balance = last_shift["master_reserve_balance"]
+            current_reserve_balance = float(last_shift["master_reserve_balance"])
 
         # Month-end payable partitions
         # Kitchen month-end payable = Total Kitchen COGS minus pre-paid chicken stock (Rs. 9,539)
@@ -952,10 +952,56 @@ async def handle_index(request: web.Request) -> web.FileResponse:
     return web.FileResponse(index_path)
 
 
+# -------------------------------------------------------------------------
+# Security: Authentication Barrier Middleware (Username & Password Protection)
+# -------------------------------------------------------------------------
+@web.middleware
+async def auth_middleware(request: web.Request, handler):
+    """
+    Enforces HTTP Basic Authentication wall across all routes and API endpoints.
+    Allows unauthenticated access only to /api/health for Docker health checks.
+    """
+    if request.path == "/api/health":
+        return await handler(request)
+
+    env_user = os.environ.get("AUTH_USERNAME")
+    env_pass = os.environ.get("AUTH_PASSWORD")
+    if not env_user or not env_pass:
+        env_path = os.path.join(os.path.dirname(__file__), ".env")
+        if os.path.exists(env_path):
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("AUTH_USERNAME="):
+                        env_user = line.strip().split("=", 1)[1].strip()
+                    elif line.startswith("AUTH_PASSWORD="):
+                        env_pass = line.strip().split("=", 1)[1].strip()
+
+    expected_user = env_user or "admin"
+    expected_pass = env_pass or "sumiyuru2026"
+
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Basic "):
+        import base64
+        try:
+            encoded_creds = auth_header.split(" ", 1)[1].strip()
+            decoded = base64.b64decode(encoded_creds).decode("utf-8")
+            username, password = decoded.split(":", 1)
+            if username == expected_user and password == expected_pass:
+                return await handler(request)
+        except Exception:
+            pass
+
+    return web.Response(
+        status=401,
+        headers={"WWW-Authenticate": 'Basic realm="Sumiyuru Stall ERP"'},
+        text="401 Unauthorized: Valid credentials required to access Sumiyuru ERP."
+    )
+
+
 def create_app() -> web.Application:
     """Constructs and returns the configured aiohttp web application."""
     init_db()
-    app = web.Application()
+    app = web.Application(middlewares=[auth_middleware])
     app.add_routes(routes)
     # Serve static directory
     if os.path.exists(STATIC_DIR):
