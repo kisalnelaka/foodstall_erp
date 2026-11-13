@@ -979,7 +979,8 @@ async def auth_middleware(request: web.Request, handler):
     expected_user = env_user or "admin"
     expected_pass = env_pass or "sumiyuru2026"
 
-    auth_header = request.headers.get("Authorization")
+    auth_header = request.headers.get("Authorization") or request.headers.get("authorization")
+    logger.info(f"Auth check: path={request.path}, header={auth_header}")
     if auth_header and auth_header.startswith("Basic "):
         import base64
         try:
