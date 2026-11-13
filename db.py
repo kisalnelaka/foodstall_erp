@@ -170,9 +170,15 @@ def init_db() -> None:
             amount REAL NOT NULL,
             payment_source TEXT NOT NULL,
             receipt_note TEXT,
+            image_path TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
         """)
+        # Safe column migration for existing tables
+        cursor = conn.execute("PRAGMA table_info(supplier_expenses_ledger);")
+        columns = [row["name"] for row in cursor.fetchall()]
+        if "image_path" not in columns:
+            conn.execute("ALTER TABLE supplier_expenses_ledger ADD COLUMN image_path TEXT;")
     conn.close()
     print("Database schema successfully verified.")
 
@@ -223,9 +229,16 @@ def seed_from_sheets_json() -> None:
                 is_returnable = 1 if supplier_name in ("Delish", "Nishan") and "Buns" in item_name else 0
 
                 conn.execute("""
-                    INSERT OR REPLACE INTO items 
+                    INSERT INTO items 
                     (name, supplier_id, settlement_type, unit_cost, selling_price, category, is_returnable)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(name) DO UPDATE SET
+                        supplier_id = excluded.supplier_id,
+                        settlement_type = excluded.settlement_type,
+                        unit_cost = excluded.unit_cost,
+                        selling_price = excluded.selling_price,
+                        category = excluded.category,
+                        is_returnable = excluded.is_returnable
                 """, (item_name, sup_id, settlement, unit_cost, selling_price, category, is_returnable))
 
         # Build item name -> id lookup
@@ -285,12 +298,25 @@ def seed_from_sheets_json() -> None:
                         status = "Closed_Event"
 
                 cur = conn.execute("""
-                    INSERT OR REPLACE INTO daily_shifts (
+                    INSERT INTO daily_shifts (
                         date, status, total_gross_revenue, actual_till_cash_in, till_variance,
                         morning_suppliers_out, helper_wage_out, other_purchases_out,
                         daily_net_to_reserve, master_reserve_balance, kitchen_cogs_accrued,
                         coffee_cogs_accrued, notes
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(date) DO UPDATE SET
+                        status = excluded.status,
+                        total_gross_revenue = excluded.total_gross_revenue,
+                        actual_till_cash_in = excluded.actual_till_cash_in,
+                        till_variance = excluded.till_variance,
+                        morning_suppliers_out = excluded.morning_suppliers_out,
+                        helper_wage_out = excluded.helper_wage_out,
+                        other_purchases_out = excluded.other_purchases_out,
+                        daily_net_to_reserve = excluded.daily_net_to_reserve,
+                        master_reserve_balance = excluded.master_reserve_balance,
+                        kitchen_cogs_accrued = excluded.kitchen_cogs_accrued,
+                        coffee_cogs_accrued = excluded.coffee_cogs_accrued,
+                        notes = excluded.notes
                 """, (
                     date_str, status, logged_rev, actual_cash, variance,
                     morning_sup, wage_out, other_out,

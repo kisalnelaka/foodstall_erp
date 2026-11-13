@@ -9,10 +9,12 @@ import json
 import logging
 import os
 import sqlite3
+import uuid
 from typing import Any, Dict, List, Optional
 from aiohttp import web
 
 from db import DB_PATH, get_db_connection, init_db, clean_number
+from receipt_parser import parse_receipt_image
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("sumiyuru-erp")
@@ -731,6 +733,182 @@ async def handle_delete_catering_order(request: web.Request) -> web.Response:
 
 
 # -------------------------------------------------------------------------
+# API: Automated AI Bill & Receipt Parsing (Gemini 2.5 Flash Vision)
+# -------------------------------------------------------------------------
+RECEIPTS_DIR = os.path.join(os.path.dirname(__file__), "data", "receipts")
+os.makedirs(RECEIPTS_DIR, exist_ok=True)
+
+
+@routes.post("/api/bills/upload")
+async def handle_upload_bill(request: web.Request) -> web.Response:
+    """
+    Accepts multipart receipt photo upload, saves file, calls Gemini 2.5 Flash
+    multimodal vision to parse and cross-verify line items and totals.
+    """
+    reader = await request.multipart()
+    target_date = date.today().isoformat()
+    image_bytes = None
+    filename = "receipt.jpg"
+    mime_type = "image/jpeg"
+
+    while True:
+        part = await reader.next()
+        if part is None:
+            break
+        if part.name == "receipt_image":
+            filename = part.filename or f"bill_{uuid.uuid4().hex[:8]}.jpg"
+            image_bytes = await part.read()
+            if filename.lower().endswith(".png"):
+                mime_type = "image/png"
+            elif filename.lower().endswith(".webp"):
+                mime_type = "image/webp"
+            elif filename.lower().endswith(".pdf"):
+                mime_type = "application/pdf"
+            else:
+                mime_type = "image/jpeg"
+        elif part.name == "target_date":
+            date_val = (await part.read()).decode("utf-8").strip()
+            if date_val:
+                target_date = date_val
+
+    if not image_bytes:
+        return web.json_response({"error": "No receipt image provided in request"}, status=400)
+
+    # Save to disk
+    unique_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}_{filename}"
+    file_path = os.path.join(RECEIPTS_DIR, unique_name)
+    with open(file_path, "wb") as f:
+        f.write(image_bytes)
+
+    rel_image_path = f"/static/receipts/{unique_name}"
+
+    try:
+        # Call Gemini AI parser
+        parsed = await parse_receipt_image(image_bytes, mime_type)
+        
+        # Cross-verification check
+        extracted_date = parsed.get("bill_date") or target_date
+        total_amount = float(parsed.get("total_amount", 0.0))
+        line_items = parsed.get("line_items", [])
+        calculated_sum = sum(float(it.get("total_price", 0.0)) for it in line_items)
+
+        variance = round(abs(total_amount - calculated_sum), 2)
+        is_verified = (variance <= 1.0) or (len(line_items) <= 1)
+
+        return web.json_response({
+            "success": True,
+            "image_url": rel_image_path,
+            "filename": unique_name,
+            "target_date": extracted_date,
+            "parsed": {
+                "bill_type": parsed.get("bill_type", "expense_purchase"),
+                "vendor_name": parsed.get("vendor_name", "Vendor"),
+                "bill_date": extracted_date,
+                "invoice_number": parsed.get("invoice_number"),
+                "total_amount": total_amount,
+                "line_items": line_items,
+                "calculated_sum": calculated_sum,
+                "variance": variance,
+                "suggested_category": parsed.get("suggested_category", "Store Maintenance"),
+                "suggested_payment_source": parsed.get("suggested_payment_source", "Master Reserve"),
+                "confidence_score": parsed.get("confidence_score", 0.95),
+                "verification_status": "VERIFIED" if is_verified else "NEEDS_REVIEW",
+                "summary_note": parsed.get("summary_note", "")
+            }
+        })
+    except Exception as e:
+        logger.error(f"Bill parsing error: {e}")
+        return web.json_response({
+            "success": False,
+            "error": str(e),
+            "image_url": rel_image_path
+        }, status=500)
+
+
+@routes.post("/api/bills/confirm")
+async def handle_confirm_bill(request: web.Request) -> web.Response:
+    """
+    Commits verified bill into the supplier expenses ledger and automatically
+    updates the corresponding shift's expenses and master reserve calculations.
+    """
+    try:
+        payload = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+
+    bill_date = payload.get("date", date.today().isoformat())
+    vendor = payload.get("vendor_name", "General Store").strip()
+    category = payload.get("category", "Supplies & Expenses").strip()
+    amount = clean_number(payload.get("amount", 0.0))
+    source = payload.get("payment_source", "Master Reserve").strip()
+    notes = payload.get("notes", "").strip()
+    image_path = payload.get("image_path", "")
+    auto_update_shift = payload.get("auto_update_shift", True)
+
+    conn = get_db_connection()
+    try:
+        with conn:
+            # 1. Insert into supplier_expenses_ledger
+            cur = conn.execute("""
+                INSERT INTO supplier_expenses_ledger (
+                    date, supplier_name, category, amount, payment_source, receipt_note, image_path
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (bill_date, vendor, category, amount, source, notes, image_path))
+            ledger_id = cur.lastrowid
+
+            # 2. Automatically update shift expenses if requested
+            if auto_update_shift and amount > 0:
+                shift = conn.execute("SELECT * FROM daily_shifts WHERE date = ?", (bill_date,)).fetchone()
+                if shift:
+                    shift_id = shift["id"]
+                    current_morning = float(shift["morning_suppliers_out"])
+                    current_other = float(shift["other_purchases_out"])
+                    actual_cash = float(shift["actual_till_cash_in"])
+                    helper_wage = float(shift["helper_wage_out"])
+                    shift_notes = str(shift["notes"] or "")
+
+                    if "Morning" in source:
+                        new_morning = current_morning + amount
+                        new_other = current_other
+                    else:
+                        new_morning = current_morning
+                        new_other = current_other + amount
+
+                    new_net_reserve = actual_cash - new_morning - helper_wage - new_other
+                    updated_notes = f"{shift_notes} | {vendor} ({amount:,.0f})" if shift_notes else f"{vendor} ({amount:,.0f})"
+
+                    conn.execute("""
+                        UPDATE daily_shifts 
+                        SET morning_suppliers_out = ?, other_purchases_out = ?,
+                            daily_net_to_reserve = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                    """, (new_morning, new_other, new_net_reserve, updated_notes, shift_id))
+
+        return web.json_response({
+            "success": True,
+            "ledger_id": ledger_id,
+            "date": bill_date,
+            "amount": amount,
+            "vendor": vendor
+        })
+    finally:
+        conn.close()
+
+
+@routes.get("/api/bills/history")
+async def handle_get_bills_history(request: web.Request) -> web.Response:
+    """Returns history of all uploaded and confirmed bills with image links."""
+    conn = get_db_connection()
+    try:
+        rows = conn.execute("""
+            SELECT * FROM supplier_expenses_ledger ORDER BY date DESC, id DESC
+        """).fetchall()
+        return web.json_response([dict_from_row(r) for r in rows])
+    finally:
+        conn.close()
+
+
+# -------------------------------------------------------------------------
 # Static File Serving & Frontend Router
 # -------------------------------------------------------------------------
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
@@ -751,6 +929,8 @@ def create_app() -> web.Application:
     # Serve static directory
     if os.path.exists(STATIC_DIR):
         app.router.add_static("/static/", path=STATIC_DIR, name="static")
+    if os.path.exists(RECEIPTS_DIR):
+        app.router.add_static("/static/receipts/", path=RECEIPTS_DIR, name="receipts")
     return app
 
 

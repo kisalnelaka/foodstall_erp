@@ -54,7 +54,8 @@ Roadside stall economics in Sri Lanka operate on hard currency till integrity. E
 
 | Capability | Description |
 | :--- | :--- |
-| **Executive Cash Cockpit** | Live physical envelope balance, month-end accrual liabilities, pure owner profit in hand, and 30-day forecast. |
+| **AI Bill & Receipt Vision Scanner** | Snap or upload receipt photos on mobile. Powered by **Gemini 2.5 Flash Vision** to extract line items, audit vendor math, and auto-commit to the daily shift expenses. |
+| **Executive Cash Cockpit** | Live physical envelope tracking, month-end accrual liabilities, pure owner profit in hand, and 30-day forecast. |
 | **Roadside POS & Shift Tally** | Touch-optimized mobile stock entry (Opening A vs Leftover B). Real-time gross sales, COGS, and units sold. |
 | **Cash Reconciliation Engine** | End-of-shift till cash counter with instant variance calculation (Over/Short) and automated Net-to-Reserve commits. |
 | **Catering Order CRM** | Event bookings, guest counts (pax), advance tracking, and 1-click formatted **WhatsApp Quotation generator**. |
@@ -154,6 +155,9 @@ Caddy will automatically request and renew Let's Encrypt certificates.
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
+| `POST` | `/api/bills/upload` | Multipart photo upload analyzed by Gemini 2.5 Flash with mathematical cross-audit. |
+| `POST` | `/api/bills/confirm` | Commits verified bill into expense ledger and recalculates shift reserve. |
+| `GET` | `/api/bills/history` | Audit log of all historical scanned receipts with photo preview links. |
 | `GET` | `/api/health` | System health check and SQLite integrity verification. |
 | `GET` | `/api/dashboard/cockpit` | Executive KPIs, Cycle 2 vs Cumulative stats, Envelope balances, and 30-day forecast. |
 | `GET` | `/api/shifts` | List all historical operational shifts with sales totals and units. |

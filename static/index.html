@@ -89,6 +89,9 @@
       <button onclick="switchTab('reconcile')" id="tabBtn-reconcile" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
         <i class="fa-solid fa-scale-balanced"></i> Cash Reconciliation
       </button>
+      <button onclick="switchTab('bills')" id="tabBtn-bills" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
+        <i class="fa-solid fa-receipt text-amber-400"></i> AI Bill Scanner
+      </button>
       <button onclick="switchTab('catering')" id="tabBtn-catering" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
         <i class="fa-solid fa-calendar-check"></i> Catering CRM
       </button>
@@ -521,6 +524,117 @@
 
 
     <!-- ========================================================================= -->
+    <!-- VIEW: AI BILL & RECEIPT SCANNER (GEMINI 2.5 FLASH VISION) -->
+    <!-- ========================================================================= -->
+    <section id="view-bills" class="tab-content space-y-6 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-camera text-amber-400"></i> AI Bill & Receipt Vision Scanner
+          </h2>
+          <p class="text-xs text-slate-400">Attach photos of daily supplier delivery bills, chicken restock chits, or fuel receipts. Gemini 2.5 Flash extracts, audits math, and updates the database automatically.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2.5 py-1 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20 font-mono">Powered by Google AI Studio</span>
+        </div>
+      </div>
+
+      <!-- UPLOAD & VERIFY CONTAINER -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- UPLOAD DROPZONE -->
+        <div class="lg:col-span-5 bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up text-brand-400"></i> 1. Snap or Upload Bill Photo
+            </h3>
+
+            <!-- TARGET SHIFT DATE -->
+            <div class="mb-4">
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Target Shift Date</label>
+              <input type="date" id="billTargetDate" class="w-full bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-xl px-3 py-2 focus:border-brand-500 focus:outline-none">
+              <p class="text-[11px] text-slate-500 mt-1">If the bill has a visible date, Gemini will automatically detect it.</p>
+            </div>
+
+            <!-- DRAG DROP AREA -->
+            <div id="dropZoneArea" onclick="document.getElementById('billFileInput').click()" class="border-2 border-dashed border-slate-700 hover:border-brand-500 bg-dark-850/60 rounded-2xl p-6 text-center cursor-pointer transition space-y-3 group">
+              <input type="file" id="billFileInput" accept="image/*,application/pdf" capture="environment" class="hidden" onchange="handleBillFileSelected(event)">
+              <div class="w-14 h-14 rounded-2xl bg-dark-800 group-hover:bg-brand-500/10 text-slate-400 group-hover:text-brand-400 flex items-center justify-center mx-auto text-2xl transition border border-slate-700 group-hover:border-brand-500/30">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-slate-200 group-hover:text-white">Click or Snap Bill Photo</div>
+                <div class="text-xs text-slate-400 mt-1">Supports Mobile Camera, PNG, JPG, WebP, PDF</div>
+              </div>
+              <div id="selectedFileName" class="text-xs font-mono font-bold text-amber-400">No file selected</div>
+            </div>
+          </div>
+
+          <button id="scanBillBtn" onclick="uploadAndParseBill()" disabled class="w-full py-3 bg-brand-600 hover:bg-brand-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-extrabold rounded-xl shadow-lg shadow-brand-600/20 transition flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-brain"></i> Parse & Audit Bill with Gemini AI
+          </button>
+        </div>
+
+        <!-- AI EXTRACTION & VERIFICATION CARD -->
+        <div class="lg:col-span-7 bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> 2. AI Extraction & Verification
+            </h3>
+            <span id="billStatusBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-dark-800 text-slate-400 border border-slate-700">
+              Awaiting Photo
+            </span>
+          </div>
+
+          <!-- PARSING SPINNER -->
+          <div id="billLoadingSpinner" class="hidden py-12 text-center space-y-3">
+            <div class="inline-block w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="text-sm font-bold text-slate-200">Analyzing bill with Gemini 2.5 Flash Vision...</div>
+            <div class="text-xs text-slate-400">Reading handwritten chits, supplier items, and calculating tax/totals</div>
+          </div>
+
+          <!-- EXTRACTED RESULT FORM -->
+          <div id="billResultContainer" class="space-y-4">
+            <div class="p-8 rounded-xl bg-dark-850 border border-slate-800 text-xs text-slate-400 text-center">
+              Snap or upload a photo of today's supplier chit (e.g. Delish bakery bill, PW Farm chicken invoice, gas refill, or fuel receipt) to preview extracted data.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SCANNED EXPENSES AUDIT HISTORY -->
+      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-receipt text-brand-400"></i> Scanned Bills & Expense Ledger Audit
+          </h3>
+          <span class="text-xs text-slate-400 font-mono">100% Attached to Shifts</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-dark-800 text-slate-400 uppercase font-bold">
+              <tr>
+                <th class="py-2.5 px-3">Date</th>
+                <th class="py-2.5 px-3">Supplier / Merchant</th>
+                <th class="py-2.5 px-3">Category</th>
+                <th class="py-2.5 px-3">Amount (Rs.)</th>
+                <th class="py-2.5 px-3">Payment Envelope</th>
+                <th class="py-2.5 px-3">Notes / Description</th>
+                <th class="py-2.5 px-3 text-center">Receipt Photo</th>
+              </tr>
+            </thead>
+            <tbody id="scannedBillsTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
     <!-- VIEW 4: CATERING CRM & WHATSAPP ORDERS -->
     <!-- ========================================================================= -->
     <section id="view-catering" class="tab-content space-y-6 hidden">
@@ -942,6 +1056,8 @@
       document.getElementById('posShiftDate').value = today;
       document.getElementById('handoverDate').value = today;
       document.getElementById('catDate').value = today;
+      const btd = document.getElementById('billTargetDate');
+      if (btd) btd.value = today;
     }
 
     async function loadInitialData() {
@@ -974,6 +1090,7 @@
         renderItemsTable();
         renderPlaybook();
         renderCateringCards();
+        loadBillsHistory();
       } catch (err) {
         console.error("Failed to load initial data", err);
       }
@@ -1632,6 +1749,276 @@
       } catch (e) {
         alert('Network error: ' + e);
       }
+    }
+
+    // -------------------------------------------------------------------------
+    // AI BILL & RECEIPT VISION SCANNER (GEMINI 2.5 FLASH)
+    // -------------------------------------------------------------------------
+    let currentSelectedBillFile = null;
+    let currentExtractedBillData = null;
+
+    function handleBillFileSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      currentSelectedBillFile = file;
+      document.getElementById('selectedFileName').innerText = `📄 ${file.name} (${Math.round(file.size / 1024)} KB)`;
+      document.getElementById('scanBillBtn').disabled = false;
+    }
+
+    async function uploadAndParseBill() {
+      if (!currentSelectedBillFile) {
+        alert('Please select a receipt photo first.');
+        return;
+      }
+
+      const targetDate = document.getElementById('billTargetDate').value || new Date().toISOString().split('T')[0];
+      const formData = new FormData();
+      formData.append('receipt_image', currentSelectedBillFile);
+      formData.append('target_date', targetDate);
+
+      const spinner = document.getElementById('billLoadingSpinner');
+      const container = document.getElementById('billResultContainer');
+      const badge = document.getElementById('billStatusBadge');
+      const btn = document.getElementById('scanBillBtn');
+
+      spinner.classList.remove('hidden');
+      container.classList.add('hidden');
+      btn.disabled = true;
+      badge.innerText = 'Analyzing with Gemini...';
+      badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse';
+
+      try {
+        const res = await fetch('/api/bills/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          currentExtractedBillData = data;
+          renderExtractedBill(data);
+        } else {
+          alert('Failed to parse bill: ' + (data.error || 'Unknown error'));
+          badge.innerText = 'Parse Error';
+          badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        }
+      } catch (err) {
+        alert('Upload failed: ' + err);
+        badge.innerText = 'Network Error';
+      } finally {
+        spinner.classList.add('hidden');
+        container.classList.remove('hidden');
+        btn.disabled = false;
+      }
+    }
+
+    function renderExtractedBill(data) {
+      const p = data.parsed;
+      const badge = document.getElementById('billStatusBadge');
+      if (p.verification_status === 'VERIFIED') {
+        badge.innerText = '✅ VERIFIED BY AI';
+        badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      } else {
+        badge.innerText = '⚠️ MATH NEEDS REVIEW';
+        badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      }
+
+      let lineItemsHtml = '';
+      if (p.line_items && p.line_items.length > 0) {
+        lineItemsHtml = `
+          <div class="border border-slate-800 rounded-xl overflow-hidden mt-3">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-dark-800 text-slate-400 font-bold uppercase">
+                <tr>
+                  <th class="py-2 px-3">Item Description</th>
+                  <th class="py-2 px-3 text-center">Qty</th>
+                  <th class="py-2 px-3 text-right">Unit Price</th>
+                  <th class="py-2 px-3 text-right">Line Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+                ${p.line_items.map(it => `
+                  <tr>
+                    <td class="py-1.5 px-3 font-semibold text-white">${it.item_name}</td>
+                    <td class="py-1.5 px-3 text-center">${it.quantity}</td>
+                    <td class="py-1.5 px-3 text-right">Rs. ${it.unit_price}</td>
+                    <td class="py-1.5 px-3 text-right font-bold text-emerald-400">Rs. ${it.total_price}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      const container = document.getElementById('billResultContainer');
+      container.innerHTML = `
+        <div class="space-y-4">
+          <!-- TOP SUMMARY WITH THUMBNAIL -->
+          <div class="flex gap-4 p-4 rounded-xl bg-dark-850 border border-slate-800 items-start">
+            <img src="${data.image_url}" onclick="openReceiptModal('${data.image_url}')" class="w-20 h-24 object-cover rounded-lg border border-slate-700 cursor-pointer hover:scale-105 transition shadow">
+            <div class="flex-1 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs uppercase font-extrabold text-amber-400 font-mono">${p.bill_type}</span>
+                <span class="text-[11px] text-slate-400 font-mono">Confidence: ${Math.round(p.confidence_score * 100)}%</span>
+              </div>
+              <div class="text-base font-bold text-white">${p.vendor_name}</div>
+              <div class="text-xs text-slate-300">${p.summary_note || 'Verified receipt'}</div>
+              <div class="text-[11px] text-brand-400 font-mono pt-1">
+                Sum of Items: Rs. ${p.calculated_sum.toLocaleString()} | Bill Total: Rs. ${p.total_amount.toLocaleString()}
+              </div>
+            </div>
+          </div>
+
+          <!-- EDITABLE VERIFICATION FIELDS -->
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-bold uppercase text-slate-400 mb-1">Vendor / Supplier Name</label>
+              <input type="text" id="confirmVendor" value="${p.vendor_name}" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 font-semibold">
+            </div>
+            <div>
+              <label class="block font-bold uppercase text-slate-400 mb-1">Bill Date</label>
+              <input type="date" id="confirmDate" value="${p.bill_date || data.target_date}" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 font-mono">
+            </div>
+            <div>
+              <label class="block font-bold uppercase text-slate-400 mb-1">Total Bill Amount (Rs.)</label>
+              <input type="number" id="confirmAmount" value="${p.total_amount}" class="w-full bg-dark-800 border-2 border-emerald-500/50 text-emerald-300 text-base font-bold rounded-lg p-2 font-mono">
+            </div>
+            <div>
+              <label class="block font-bold uppercase text-slate-400 mb-1">Expense Category</label>
+              <select id="confirmCategory" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2">
+                <option ${p.suggested_category === 'Chicken & Meat' ? 'selected' : ''}>Chicken & Meat</option>
+                <option ${p.suggested_category === 'Morning Delivery Cash' ? 'selected' : ''}>Morning Delivery Cash</option>
+                <option ${p.suggested_category === 'Packaging & Supplies' ? 'selected' : ''}>Packaging & Supplies</option>
+                <option ${p.suggested_category === 'Fuel & Transport' ? 'selected' : ''}>Fuel & Transport</option>
+                <option ${p.suggested_category === 'Utilities & Gas' ? 'selected' : ''}>Utilities & Gas</option>
+                <option ${p.suggested_category === 'Store Maintenance' ? 'selected' : ''}>Store Maintenance</option>
+                <option ${p.suggested_category === 'Groceries & Spices' ? 'selected' : ''}>Groceries & Spices</option>
+                <option ${p.suggested_category === 'Other Expenses' ? 'selected' : ''}>Other Expenses</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-bold uppercase text-slate-400 mb-1">Payment Envelope Source</label>
+              <select id="confirmPaymentSource" class="w-full bg-dark-800 border border-slate-700 text-brand-300 font-semibold rounded-lg p-2">
+                <option ${p.suggested_payment_source === 'Master Reserve' ? 'selected' : ''}>Master Reserve</option>
+                <option ${p.suggested_payment_source === 'Morning Cash Envelope' ? 'selected' : ''}>Morning Cash Envelope</option>
+                <option ${p.suggested_payment_source === 'Direct Till' ? 'selected' : ''}>Direct Till</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold uppercase text-slate-400 mb-1">Audit Notes</label>
+              <input type="text" id="confirmNotes" value="${p.summary_note || ''}" class="w-full bg-dark-800 border border-slate-700 text-slate-300 rounded-lg p-2">
+            </div>
+          </div>
+
+          ${lineItemsHtml}
+
+          <!-- CONFIRM ACTION BUTTON -->
+          <button onclick="commitVerifiedBill('${data.image_url}')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-check-double"></i> Confirm & Commit to Shift Expenses (Rs. ${p.total_amount.toLocaleString()})
+          </button>
+        </div>
+      `;
+    }
+
+    async function commitVerifiedBill(imageUrl) {
+      const payload = {
+        date: document.getElementById('confirmDate').value,
+        vendor_name: document.getElementById('confirmVendor').value,
+        amount: parseFloat(document.getElementById('confirmAmount').value) || 0,
+        category: document.getElementById('confirmCategory').value,
+        payment_source: document.getElementById('confirmPaymentSource').value,
+        notes: document.getElementById('confirmNotes').value,
+        image_path: imageUrl,
+        auto_update_shift: true
+      };
+
+      try {
+        const res = await fetch('/api/bills/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`✅ Bill from ${payload.vendor_name} (Rs. ${payload.amount.toLocaleString()}) verified and committed to shift ${payload.date}!\nCash Flow and Master Reserve updated.`);
+          document.getElementById('billFileInput').value = '';
+          currentSelectedBillFile = null;
+          document.getElementById('selectedFileName').innerText = 'No file selected';
+          document.getElementById('scanBillBtn').disabled = true;
+          document.getElementById('billStatusBadge').innerText = 'Awaiting Photo';
+          document.getElementById('billStatusBadge').className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-dark-800 text-slate-400 border border-slate-700';
+          document.getElementById('billResultContainer').innerHTML = `
+            <div class="p-8 rounded-xl bg-dark-850 border border-slate-800 text-xs text-emerald-400 text-center font-bold">
+              ✅ Bill committed successfully to shift ${payload.date}! Ready for next photo.
+            </div>
+          `;
+          await loadInitialData();
+          await loadBillsHistory();
+        } else {
+          alert('Error committing bill: ' + result.error);
+        }
+      } catch (err) {
+        alert('Network error: ' + err);
+      }
+    }
+
+    async function loadBillsHistory() {
+      try {
+        const res = await fetch('/api/bills/history');
+        const rows = await res.json();
+        const tbody = document.getElementById('scannedBillsTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-dark-800/40';
+          tr.innerHTML = `
+            <td class="py-2.5 px-3 font-semibold text-white">${r.date}</td>
+            <td class="py-2.5 px-3 text-slate-200 font-bold">${r.supplier_name}</td>
+            <td class="py-2.5 px-3 text-slate-400">${r.category}</td>
+            <td class="py-2.5 px-3 text-emerald-400 font-bold">Rs. ${r.amount.toLocaleString()}</td>
+            <td class="py-2.5 px-3 text-brand-300 font-semibold">${r.payment_source}</td>
+            <td class="py-2.5 px-3 text-slate-400 text-xs max-w-xs truncate">${r.receipt_note || ''}</td>
+            <td class="py-2.5 px-3 text-center">
+              ${r.image_path ? `
+                <button onclick="openReceiptModal('${r.image_path}')" class="px-2 py-1 bg-dark-800 hover:bg-dark-700 text-brand-400 rounded border border-slate-700 text-[11px] font-sans">
+                  <i class="fa-solid fa-eye"></i> View
+                </button>
+              ` : '<span class="text-slate-600">—</span>'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Failed to load bills history', e);
+      }
+    }
+
+    function openReceiptModal(url) {
+      let modal = document.getElementById('receiptPreviewModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'receiptPreviewModal';
+        modal.className = 'fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        document.body.appendChild(modal);
+      }
+      modal.innerHTML = `
+        <div class="relative bg-dark-900 border border-slate-700 rounded-2xl max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl p-4 flex flex-col">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <span class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-receipt text-amber-400"></i> Original Receipt Image</span>
+            <button onclick="document.getElementById('receiptPreviewModal').remove()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="p-2 overflow-auto flex-1 flex items-center justify-center">
+            <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow">
+          </div>
+        </div>
+      `;
     }
   </script>
 </body>
