@@ -19,23 +19,22 @@ services:
       retries: 3
       start_period: 10s
 
-  # Automatic HTTPS Reverse Proxy via Caddy (Optional - uncomment when domain is pointed)
-  # caddy:
-  #   image: caddy:2-alpine
-  #   container_name: sumiyuru-caddy
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #     - caddy-data:/data
-  #     - caddy-config:/config
-  #   depends_on:
-  #     - app
+  caddy:
+    image: caddy:2-alpine
+    container_name: sumiyuru-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - app
 
 volumes:
   sumiyuru-data:
     name: sumiyuru-data
-  # caddy-data:
-  # caddy-config:
+  caddy-data:
+  caddy-config:

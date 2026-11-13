@@ -1,32 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sumiyuru Catering & Roadside Stall - ERP & Cash Cockpit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sumiyuru Stall & Catering ERP</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          },
           colors: {
-            brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
+            surface: {
+              base: '#090d16',
+              card: '#0f172a',
+              elevated: '#172033',
+              subtle: '#1e293b'
             },
-            dark: {
-              800: '#1e293b',
-              850: '#172033',
-              900: '#0f172a',
-              950: '#090d16',
+            accent: {
+              emerald: '#10b981',
+              emeraldDark: '#059669',
+              amber: '#f59e0b',
+              rose: '#f43f5e',
+              indigo: '#6366f1'
             }
           }
         }
@@ -34,230 +36,245 @@
     }
   </script>
   <style>
+    /* Professional financial tabular typography */
+    .num, .font-mono { font-variant-numeric: tabular-nums lining-nums; }
+    
+    /* Touch target optimizations */
+    .touch-btn { min-height: 44px; min-width: 44px; touch-action: manipulation; }
+    
+    /* Smooth custom scrollbars */
+    .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
       #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
       .no-print { display: none !important; }
     }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
   </style>
 </head>
-<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+<body class="bg-surface-base text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-accent-emerald selection:text-white pb-20 md:pb-6">
 
-  <!-- TOP EXECUTIVE NAVBAR -->
-  <header class="border-b border-slate-800 bg-dark-900/90 backdrop-blur sticky top-0 z-50 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+  <!-- TOP APP HEADER -->
+  <header class="border-b border-surface-subtle bg-surface-card/90 backdrop-blur sticky top-0 z-40 px-4 py-2.5 flex items-center justify-between gap-3 shadow-sm">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-bold text-xl">
+      <div class="w-9 h-9 rounded-lg bg-surface-elevated border border-slate-700/60 flex items-center justify-center text-accent-emerald font-black text-base shadow-sm">
         <i class="fa-solid fa-utensils"></i>
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="font-extrabold text-lg tracking-tight text-white">SUMIYURU</h1>
-          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">STALL ERP & CASH COCKPIT</span>
+          <h1 class="font-bold text-sm md:text-base tracking-tight text-white uppercase">Sumiyuru</h1>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 uppercase tracking-wider">Stall & Catering</span>
         </div>
-        <p class="text-xs text-slate-400">Roadside Stall & Catering Management System • Cycle 2 Active</p>
+        <p class="text-[11px] text-slate-400">Roadside Cash Cockpit • Cycle 2 Active</p>
       </div>
     </div>
 
-    <!-- LIVE STATUS BADGES -->
-    <div class="flex items-center gap-2 text-xs flex-wrap">
-      <div class="px-2.5 py-1 rounded-lg bg-dark-800 border border-slate-700 text-slate-300 flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <!-- HEADER STATUS CHIPS -->
+    <div class="flex items-center gap-2 text-xs">
+      <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-base border border-slate-800 text-slate-300 font-mono text-[11px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
         <span id="systemLiveClock">17:00:00</span>
       </div>
-      <div class="px-2.5 py-1 rounded-lg bg-emerald-950/60 border border-emerald-700/50 text-emerald-300 font-mono font-medium">
-        Till Float: Rs. 5,000
+      <div class="px-2.5 py-1 rounded-md bg-surface-base border border-slate-800 text-slate-300 font-mono text-xs">
+        <span class="text-slate-500 text-[10px] uppercase block sm:inline">Float</span> Rs. 5,000
       </div>
-      <button onclick="openHandoverModal()" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium shadow transition flex items-center gap-1.5">
-        <i class="fa-solid fa-money-bill-transfer"></i> Handover to Dad
+      <button onclick="openHandoverModal()" class="px-2.5 py-1 rounded-md bg-accent-amber/15 hover:bg-accent-amber/25 text-amber-300 border border-amber-500/30 font-medium text-xs transition flex items-center gap-1.5 touch-btn">
+        <i class="fa-solid fa-hand-holding-dollar text-[11px]"></i>
+        <span class="hidden sm:inline">Handover</span>
       </button>
     </div>
   </header>
 
-  <!-- NAVIGATION TABS -->
-  <nav class="bg-dark-900 border-b border-slate-800 px-4 overflow-x-auto custom-scrollbar no-print">
-    <div class="flex gap-1 py-2 min-w-max">
-      <button onclick="switchTab('cockpit')" id="tabBtn-cockpit" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-brand-600 text-white shadow">
-        <i class="fa-solid fa-gauge-high"></i> Executive Cockpit
+  <!-- DESKTOP / TABLET NAVIGATION TABS (>= 768px) -->
+  <nav class="hidden md:block bg-surface-card border-b border-surface-subtle px-4 overflow-x-auto custom-scroll no-print">
+    <div class="flex gap-1 py-1.5 min-w-max max-w-7xl mx-auto">
+      <button onclick="switchTab('cockpit')" id="tabBtn-cockpit" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 bg-accent-emerald text-white shadow-sm">
+        <i class="fa-solid fa-gauge text-[11px]"></i> Executive Cockpit
       </button>
-      <button onclick="switchTab('pos')" id="tabBtn-pos" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-cash-register"></i> Shift Tally (POS)
+      <button onclick="switchTab('pos')" id="tabBtn-pos" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-cash-register text-[11px]"></i> Shift Tally (POS)
       </button>
-      <button onclick="switchTab('reconcile')" id="tabBtn-reconcile" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-scale-balanced"></i> Cash Reconciliation
+      <button onclick="switchTab('reconcile')" id="tabBtn-reconcile" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-scale-balanced text-[11px]"></i> Cash Reconcile
       </button>
-      <button onclick="switchTab('bills')" id="tabBtn-bills" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-receipt text-amber-400"></i> AI Bill Scanner
+      <button onclick="switchTab('bills')" id="tabBtn-bills" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-camera text-[11px] text-amber-400"></i> AI Bill Scanner
       </button>
-      <button onclick="switchTab('catering')" id="tabBtn-catering" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-calendar-check"></i> Catering CRM
+      <button onclick="switchTab('catering')" id="tabBtn-catering" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-calendar-check text-[11px]"></i> Catering CRM
       </button>
-      <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-boxes-stacked"></i> Par Optimizer
+      <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-boxes-stacked text-[11px]"></i> Par Optimizer
       </button>
-      <button onclick="switchTab('analytics')" id="tabBtn-analytics" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-chart-pie"></i> Day Analytics & Closure
+      <button onclick="switchTab('analytics')" id="tabBtn-analytics" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-chart-pie text-[11px]"></i> Day Analysis
       </button>
-      <button onclick="switchTab('printable')" id="tabBtn-printable" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-print"></i> Printable Sheet
+      <button onclick="switchTab('items')" id="tabBtn-items" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-tags text-[11px]"></i> Unit Economics
       </button>
-      <button onclick="switchTab('items')" id="tabBtn-items" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-tags"></i> Unit Economics
+      <button onclick="switchTab('printable')" id="tabBtn-printable" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-print text-[11px]"></i> Print Sheet
       </button>
-      <button onclick="switchTab('playbook')" id="tabBtn-playbook" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-dark-800">
-        <i class="fa-solid fa-book-bookmark"></i> Playbook & SOPs
+      <button onclick="switchTab('playbook')" id="tabBtn-playbook" class="tab-btn px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-surface-elevated">
+        <i class="fa-solid fa-book-bookmark text-[11px]"></i> Playbook
       </button>
     </div>
   </nav>
 
-  <!-- MAIN VIEW CONTAINER -->
-  <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full custom-scrollbar">
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 p-3 md:p-6 max-w-7xl mx-auto w-full custom-scroll">
 
     <!-- ========================================================================= -->
-    <!-- VIEW 1: EXECUTIVE COCKPIT -->
+    <!-- TAB 1: EXECUTIVE CASH COCKPIT -->
     <!-- ========================================================================= -->
-    <section id="view-cockpit" class="tab-content space-y-6">
+    <section id="view-cockpit" class="tab-content space-y-4 md:space-y-6">
       
-      <!-- TOP 4 BANNER KPIS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Card 1 -->
-        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-          <div class="absolute -right-4 -bottom-4 text-slate-800/50 text-7xl font-black">Rs</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Total Stall Revenue (Cycle 2)</div>
-          <div id="c2-gross-rev" class="text-3xl font-extrabold text-white tracking-tight">Rs. 104,089</div>
-          <div class="mt-2 text-xs text-brand-400 flex items-center gap-1 font-medium">
-            <i class="fa-solid fa-chart-line"></i> <span id="c2-daily-avg">Daily Avg: Rs. 17,348</span> | 6 Active Days
+      <!-- PRIMARY KPI TILES -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <!-- Tile 1 -->
+        <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Cycle 2 Revenue</span>
+            <span class="text-xs text-slate-500 font-mono">6 Days</span>
+          </div>
+          <div id="c2-gross-rev" class="text-xl md:text-2xl font-bold font-mono text-white mt-2">Rs. 104,089</div>
+          <div class="mt-1 text-[11px] text-accent-emerald font-mono flex items-center gap-1">
+            <span id="c2-daily-avg">Avg: Rs. 17,348/d</span>
           </div>
         </div>
 
-        <!-- Card 2 -->
-        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-          <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Physical Cash Reserve</div>
-          <div id="c2-cash-reserve" class="text-3xl font-extrabold text-emerald-400 tracking-tight">Rs. 40,350</div>
-          <div class="mt-2 text-xs text-slate-300 flex items-center gap-1">
-            <i class="fa-solid fa-shield-halved text-emerald-400"></i> 100% Reconciled Till Buffer in Hand
+        <!-- Tile 2 -->
+        <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Physical Reserve</span>
+            <span class="text-xs text-accent-emerald font-mono">100%</span>
           </div>
+          <div id="c2-cash-reserve" class="text-xl md:text-2xl font-bold font-mono text-accent-emerald mt-2">Rs. 40,350</div>
+          <div class="mt-1 text-[11px] text-slate-400">Reconciled till buffer</div>
         </div>
 
-        <!-- Card 3 -->
-        <div class="bg-gradient-to-br from-dark-900 to-emerald-950/40 border border-emerald-800/40 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-          <div class="text-xs uppercase tracking-wider text-emerald-400 font-bold mb-1">100% Pure Owner Profit</div>
-          <div id="c2-pure-profit" class="text-3xl font-extrabold text-emerald-300 tracking-tight">Rs. 22,197</div>
-          <div class="mt-2 text-xs text-emerald-400/90 flex items-center gap-1">
-            <i class="fa-solid fa-wallet"></i> Net cash pocketed after kitchen & debts
+        <!-- Tile 3 -->
+        <div class="bg-surface-card border border-emerald-500/20 rounded-xl p-4 shadow-sm flex flex-col justify-between bg-gradient-to-br from-surface-card to-emerald-950/20">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider text-emerald-400 font-semibold">Pure Owner Profit</span>
+            <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
           </div>
+          <div id="c2-pure-profit" class="text-xl md:text-2xl font-bold font-mono text-emerald-300 mt-2">Rs. 22,197</div>
+          <div class="mt-1 text-[11px] text-emerald-400/80">Unencumbered cash in hand</div>
         </div>
 
-        <!-- Card 4 -->
-        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-          <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Steady-State Run-Rate</div>
-          <div id="c2-run-rate" class="text-3xl font-extrabold text-amber-400 tracking-tight">Rs. 110,985</div>
-          <div class="mt-2 text-xs text-amber-400/90 flex items-center gap-1">
-            <i class="fa-solid fa-fire"></i> Rs. 3,700/day recurring profit potential
+        <!-- Tile 4 -->
+        <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Steady Run-Rate</span>
+            <span class="text-xs text-amber-400 font-mono">30d</span>
           </div>
+          <div id="c2-run-rate" class="text-xl md:text-2xl font-bold font-mono text-amber-400 mt-2">Rs. 110,985</div>
+          <div class="mt-1 text-[11px] text-slate-400 font-mono">Rs. 3,700/day recurring</div>
         </div>
       </div>
 
-      <!-- CASH ENVELOPES & PROFIT ALLOCATION SPLIT -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 3-ENVELOPE CASH ACCORDION / PARTITION -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         
-        <!-- LIVE CASH ENVELOPES -->
-        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <span class="text-emerald-400">💰</span> LIVE PHYSICAL CASH ENVELOPES
+        <!-- PHYSICAL ENVELOPES -->
+        <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 md:p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-surface-subtle pb-2.5">
+            <h2 class="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
+              Live Physical Cash Envelopes
             </h2>
-            <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300">Physical drawer cash</span>
+            <span class="text-[11px] text-slate-400 font-mono">Closing Till Count</span>
           </div>
 
-          <div class="space-y-3">
+          <div class="space-y-2 text-xs">
             <!-- Envelope 1 -->
-            <div class="p-4 rounded-xl bg-dark-800/60 border border-slate-700/70 flex items-center justify-between">
+            <div class="p-3 rounded-lg bg-surface-elevated border border-slate-800 flex items-center justify-between">
               <div>
-                <div class="font-bold text-sm text-slate-200">[Envelope 1] Tomorrow Morning Suppliers</div>
-                <div class="text-xs text-slate-400">Delish & Nishan morning cash settlement (Nov 9)</div>
+                <div class="font-semibold text-slate-200">[Envelope 1] Morning Suppliers Buffer</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Delish & Nishan morning cash settlement</div>
               </div>
               <div class="text-right">
-                <div class="font-bold text-lg text-white">Rs. 0</div>
-                <div class="text-[11px] text-emerald-400">Ready for next shift</div>
+                <div class="font-mono font-bold text-white text-sm">Rs. 0</div>
+                <div class="text-[10px] text-accent-emerald font-mono">Ready for next shift</div>
               </div>
             </div>
 
             <!-- Envelope 2 -->
-            <div class="p-4 rounded-xl bg-dark-800/60 border border-slate-700/70 flex items-center justify-between">
+            <div class="p-3 rounded-lg bg-surface-elevated border border-slate-800 flex items-center justify-between">
               <div>
-                <div class="font-bold text-sm text-slate-200">[Envelope 2] Helper Wages Packet</div>
-                <div class="text-xs text-slate-400">Covered via daily operational cash flow buffer</div>
+                <div class="font-semibold text-slate-200">[Envelope 2] Helper Wages Packet</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Covered from operational cash flow</div>
               </div>
               <div class="text-right">
-                <div class="font-bold text-lg text-emerald-400">Rs. 8,400</div>
-                <div class="text-[11px] text-slate-400">Rs. 1,200/day pool</div>
+                <div class="font-mono font-bold text-accent-emerald text-sm">Rs. 8,400</div>
+                <div class="text-[10px] text-slate-400 font-mono">Rs. 1,200/day rate</div>
               </div>
             </div>
 
             <!-- Envelope 3 -->
-            <div class="p-4 rounded-xl bg-brand-950/40 border border-brand-800/50 flex items-center justify-between">
+            <div class="p-3 rounded-lg bg-surface-elevated border border-emerald-500/30 flex items-center justify-between">
               <div>
-                <div class="font-bold text-sm text-brand-300">[Envelope 3] Master Reserve Heap Total</div>
-                <div class="text-xs text-slate-400">Handed over to Dad at cycle close, resetting to Rs. 0</div>
+                <div class="font-semibold text-emerald-300">[Envelope 3] Master Reserve Heap</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Handover to Dad at weekly cycle close</div>
               </div>
               <div class="text-right">
-                <div class="font-extrabold text-xl text-brand-400">Rs. 40,350</div>
-                <div class="text-[11px] text-brand-300 font-medium">100% Reconciled Till Buffer</div>
+                <div class="font-mono font-bold text-accent-emerald text-base">Rs. 40,350</div>
+                <div class="text-[10px] text-emerald-400/90 font-mono">100% Reconciled</div>
               </div>
             </div>
 
-            <!-- Total Operating Buffer & Physical Cash Total -->
-            <div class="pt-2 border-t border-slate-800 flex justify-between text-xs text-slate-400">
-              <span>Total Operating Buffers Set-Aside: <strong class="text-slate-200">Rs. 8,400</strong></span>
-              <span>Total Physical Till Cash Tracked: <strong class="text-emerald-400">Rs. 48,750</strong></span>
+            <div class="pt-2 flex justify-between text-[11px] text-slate-400 border-t border-slate-800/80">
+              <span>Operating Buffers Set-Aside: <strong class="text-slate-200 font-mono">Rs. 8,400</strong></span>
+              <span>Total Physical Drawer Cash: <strong class="text-accent-emerald font-mono">Rs. 48,750</strong></span>
             </div>
           </div>
         </div>
 
-        <!-- RESERVE ALLOCATION & PURE PROFIT PARTITION -->
-        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <span class="text-brand-400">📊</span> MASTER RESERVE ALLOCATION & OWNER PROFIT
+        <!-- PROFIT & LIABILITIES PARTITION -->
+        <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 md:p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-surface-subtle pb-2.5">
+            <h2 class="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-accent-amber"></span>
+              Master Reserve Liabilities & Profit
             </h2>
-            <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300">Liability partition</span>
+            <span class="text-[11px] text-slate-400 font-mono">Net Partition</span>
           </div>
 
-          <div class="space-y-3">
-            <div class="flex justify-between items-center text-sm p-3 rounded-lg bg-dark-800/40 border border-slate-800">
+          <div class="space-y-2 text-xs">
+            <div class="p-2.5 rounded-lg bg-surface-elevated border border-slate-800 flex justify-between items-center">
               <div>
                 <div class="text-slate-300 font-medium">Kitchen Month-End Payable</div>
-                <div class="text-xs text-slate-500">Net of Cycle 2 Pre-Paid Stock (PW Farm & Nirosha Chicken)</div>
+                <div class="text-[10px] text-slate-500">Net of Pre-Paid Stock (PW Farm & Nirosha Chicken)</div>
               </div>
-              <div class="text-rose-400 font-mono font-bold text-base">- Rs. 17,151</div>
+              <div class="text-rose-400 font-mono font-bold">- Rs. 17,151</div>
             </div>
 
-            <div class="flex justify-between items-center text-sm p-3 rounded-lg bg-dark-800/40 border border-slate-800">
+            <div class="p-2.5 rounded-lg bg-surface-elevated border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="text-slate-300 font-medium">Reserved for Godrej Coffee Premix</div>
-                <div class="text-xs text-slate-500">0 cups sold @ Rs. 50 month-end settlement</div>
+                <div class="text-slate-300 font-medium">Godrej Coffee Premix Payable</div>
+                <div class="text-[10px] text-slate-500">0 cups @ Rs. 50 month-end rate</div>
               </div>
-              <div class="text-slate-400 font-mono font-bold text-base">- Rs. 0</div>
+              <div class="text-slate-400 font-mono font-bold">- Rs. 0</div>
             </div>
 
-            <div class="flex justify-between items-center text-sm p-3 rounded-lg bg-dark-800/40 border border-slate-800">
+            <div class="p-2.5 rounded-lg bg-surface-elevated border border-slate-800 flex justify-between items-center">
               <div>
-                <div class="text-slate-300 font-medium">Electricity & Overheads Reserve</div>
-                <div class="text-xs text-slate-500">6 Active Operating Days @ Rs. 167/day</div>
+                <div class="text-slate-300 font-medium">Electricity & Stall Overheads</div>
+                <div class="text-[10px] text-slate-500">6 Operating Days @ Rs. 167/day</div>
               </div>
-              <div class="text-rose-400 font-mono font-bold text-base">- Rs. 1,002</div>
+              <div class="text-rose-400 font-mono font-bold">- Rs. 1,002</div>
             </div>
 
-            <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-dark-800 border border-emerald-600/50 flex items-center justify-between">
+            <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/40 flex items-center justify-between">
               <div>
-                <div class="text-xs font-bold uppercase tracking-wider text-emerald-400">FREE MEMORY (Pure Owner Profit in Hand)</div>
-                <div class="text-xs text-slate-300 mt-0.5">Net cash yours to keep after all accruals & payables</div>
+                <div class="text-[10px] uppercase font-bold tracking-wider text-emerald-400">FREE MEMORY (Pure Owner Profit)</div>
+                <div class="text-[11px] text-slate-300">Pocketed after all supplier debts & bills</div>
               </div>
-              <div class="text-2xl font-black text-emerald-300 font-mono">
+              <div class="text-lg md:text-xl font-bold font-mono text-emerald-300">
                 Rs. 22,197
               </div>
             </div>
@@ -266,61 +283,60 @@
 
       </div>
 
-      <!-- 30-DAY FORECAST & RECENT SHIFT SPARKLINE -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- 30-Day Projections Table -->
-        <div class="lg:col-span-2 bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
-          <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-chart-line text-brand-400"></i> 30-Day Monthly Run-Rate Forecast & Revenue Projections
+      <!-- 30-DAY FORECAST & CYCLE TREND -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div class="lg:col-span-2 bg-surface-card border border-surface-subtle rounded-xl p-4 md:p-5 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-accent-emerald"></i> 30-Day Steady-State Revenue Forecast
           </h3>
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400 font-bold">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-surface-subtle text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
                 <tr>
-                  <th class="py-3 px-4">Forecast Metric</th>
-                  <th class="py-3 px-4">Daily Average (6 Days)</th>
-                  <th class="py-3 px-4">30-Day Projected</th>
-                  <th class="py-3 px-4">Operating Logic</th>
+                  <th class="py-2 px-3">Metric</th>
+                  <th class="py-2 px-3">Daily Avg</th>
+                  <th class="py-2 px-3">30-Day Run-Rate</th>
+                  <th class="py-2 px-3">Logic</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-800/60 text-slate-300">
-                <tr class="hover:bg-dark-800/40">
-                  <td class="py-3 px-4 font-semibold text-white">Gross Stall Turnover</td>
-                  <td class="py-3 px-4 font-mono text-emerald-400">Rs. 17,348</td>
-                  <td class="py-3 px-4 font-mono font-bold text-emerald-300">Rs. 520,445</td>
-                  <td class="py-3 px-4 text-xs text-slate-400">Steady run-rate on 6-day operational week</td>
+              <tbody class="divide-y divide-slate-800/80 text-slate-300 font-mono">
+                <tr>
+                  <td class="py-2.5 px-3 font-medium text-white font-sans">Gross Stall Turnover</td>
+                  <td class="py-2.5 px-3 text-slate-300">Rs. 17,348</td>
+                  <td class="py-2.5 px-3 text-accent-emerald font-bold">Rs. 520,445</td>
+                  <td class="py-2.5 px-3 text-[11px] text-slate-400 font-sans">Steady 6-day week run-rate</td>
                 </tr>
-                <tr class="hover:bg-dark-800/40">
-                  <td class="py-3 px-4 font-semibold text-white">Net Cash to Master Reserve</td>
-                  <td class="py-3 px-4 font-mono text-emerald-400">Rs. 6,725</td>
-                  <td class="py-3 px-4 font-mono font-bold text-emerald-300">Rs. 201,750</td>
-                  <td class="py-3 px-4 text-xs text-slate-400">Cumulative till cash accumulation in envelope</td>
+                <tr>
+                  <td class="py-2.5 px-3 font-medium text-white font-sans">Net Cash to Reserve</td>
+                  <td class="py-2.5 px-3 text-slate-300">Rs. 6,725</td>
+                  <td class="py-2.5 px-3 text-accent-emerald font-bold">Rs. 201,750</td>
+                  <td class="py-2.5 px-3 text-[11px] text-slate-400 font-sans">Accumulated cash in envelope</td>
                 </tr>
-                <tr class="hover:bg-dark-800/40 bg-emerald-950/20">
-                  <td class="py-3 px-4 font-semibold text-emerald-300">Pure Owner Net Profit (Conservative)</td>
-                  <td class="py-3 px-4 font-mono text-emerald-400">Rs. 3,700</td>
-                  <td class="py-3 px-4 font-mono font-extrabold text-emerald-300">Rs. 110,985</td>
-                  <td class="py-3 px-4 text-xs text-emerald-400/90">After all supplier settlements, wages & debts</td>
+                <tr class="bg-emerald-950/20">
+                  <td class="py-2.5 px-3 font-semibold text-emerald-300 font-sans">Pure Owner Net Profit</td>
+                  <td class="py-2.5 px-3 text-emerald-400 font-bold">Rs. 3,700</td>
+                  <td class="py-2.5 px-3 text-emerald-300 font-black">Rs. 110,985</td>
+                  <td class="py-2.5 px-3 text-[11px] text-emerald-400/90 font-sans">After all accruals & payables</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Recent Revenue Chart -->
-        <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+        <!-- TREND CHART -->
+        <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 md:p-5 shadow-sm flex flex-col justify-between">
           <div>
-            <h3 class="text-base font-bold text-white mb-1 flex items-center gap-2">
-              <i class="fa-solid fa-chart-column text-emerald-400"></i> Cycle 2 Daily Trend
-            </h3>
-            <p class="text-xs text-slate-400 mb-4">Gross Revenue vs Net to Reserve</p>
-            <div class="h-48 relative">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Cycle 2 Shift Performance</h3>
+              <span class="text-[10px] text-slate-500 font-mono">Nov 3-8</span>
+            </div>
+            <div class="h-44 relative">
               <canvas id="cycleTrendChart"></canvas>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-400 flex justify-between">
-            <span>Peak Revenue: <strong class="text-emerald-400">Rs. 18,940</strong> (Sat)</span>
-            <span>Zero-Variance Audit: <strong class="text-emerald-400">100%</strong></span>
+          <div class="pt-2 text-[10px] text-slate-400 flex justify-between border-t border-slate-800/80">
+            <span>Peak: <strong class="text-accent-emerald font-mono">Rs. 18,940</strong></span>
+            <span>Audit: <strong class="text-accent-emerald font-mono">Zero Variance</strong></span>
           </div>
         </div>
       </div>
@@ -329,303 +345,252 @@
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 2: ROADSIDE POS & SHIFT TALLY -->
+    <!-- TAB 2: ROADSIDE POS & SHIFT TALLY (TOUCH OPTIMIZED FOR PHONES) -->
     <!-- ========================================================================= -->
-    <section id="view-pos" class="tab-content space-y-6 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-4 rounded-2xl">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-cash-register text-brand-400"></i> Daily Shift Tally & Entry
-          </h2>
-          <p class="text-xs text-slate-400">Mobile-first touch entry for stall cashier. Enter Opening Received & Leftover Unsold.</p>
+    <section id="view-pos" class="tab-content space-y-4 hidden">
+      <!-- SHIFT HEADER BAR -->
+      <div class="bg-surface-card border border-surface-subtle p-3.5 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-semibold block">Shift Date</label>
+            <input type="date" id="posShiftDate" class="bg-surface-elevated border border-slate-700 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:border-accent-emerald focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-semibold block">Cashier</label>
+            <input type="text" id="posCashierName" value="Owner" class="bg-surface-elevated border border-slate-700 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:border-accent-emerald focus:outline-none w-24">
+          </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <div>
-            <label class="text-[11px] text-slate-400 uppercase font-bold block mb-1">Shift Date</label>
-            <input type="date" id="posShiftDate" class="bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:border-brand-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="text-[11px] text-slate-400 uppercase font-bold block mb-1">Cashier / Staff</label>
-            <input type="text" id="posCashierName" value="Owner" class="bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:border-brand-500 focus:outline-none w-28">
-          </div>
-          <button onclick="saveShiftTally()" class="mt-4 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center gap-2">
-            <i class="fa-solid fa-floppy-disk"></i> Save Shift Tally
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="prefillParTargets()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition flex items-center justify-center gap-1.5 touch-btn">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-xs"></i> Pre-Fill Pars
+          </button>
+          <button onclick="saveShiftTally()" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg bg-accent-emerald hover:bg-accent-emeraldDark text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 touch-btn">
+            <i class="fa-solid fa-floppy-disk text-xs"></i> Save Shift
           </button>
         </div>
       </div>
 
-      <!-- LIVE TALLY COUNTER CARD -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
-          <div class="text-xs text-slate-400">Total Units Sold</div>
-          <div id="liveTotalUnits" class="text-2xl font-bold text-white mt-1">0</div>
-        </div>
-        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
-          <div class="text-xs text-slate-400">Total Leftovers</div>
-          <div id="liveTotalLeftovers" class="text-2xl font-bold text-amber-400 mt-1">0</div>
-        </div>
-        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
-          <div class="text-xs text-slate-400">Shift Gross Revenue</div>
-          <div id="liveGrossRevenue" class="text-2xl font-extrabold text-emerald-400 mt-1">Rs. 0</div>
-        </div>
-        <div class="p-4 bg-dark-900 border border-slate-800 rounded-xl">
-          <div class="text-xs text-slate-400">Estimated Total COGS</div>
-          <div id="liveTotalCOGS" class="text-2xl font-extrabold text-slate-300 mt-1">Rs. 0</div>
-        </div>
+      <!-- FILTER PILLS FOR MOBILE TOUCH -->
+      <div class="flex gap-1.5 overflow-x-auto pb-1 custom-scroll text-xs">
+        <button onclick="filterPosCategory('ALL')" class="pos-cat-btn px-3 py-1 rounded-full bg-accent-emerald text-white font-medium whitespace-nowrap">All Items</button>
+        <button onclick="filterPosCategory('Delish')" class="pos-cat-btn px-3 py-1 rounded-full bg-surface-card text-slate-400 border border-slate-800 hover:text-white whitespace-nowrap">Delish (Bakery)</button>
+        <button onclick="filterPosCategory('Nishan')" class="pos-cat-btn px-3 py-1 rounded-full bg-surface-card text-slate-400 border border-slate-800 hover:text-white whitespace-nowrap">Nishan (Short Eats)</button>
+        <button onclick="filterPosCategory('In-House Kitchen')" class="pos-cat-btn px-3 py-1 rounded-full bg-surface-card text-slate-400 border border-slate-800 hover:text-white whitespace-nowrap">Kitchen (Rice/Cutlets)</button>
+        <button onclick="filterPosCategory('Hoppers')" class="pos-cat-btn px-3 py-1 rounded-full bg-surface-card text-slate-400 border border-slate-800 hover:text-white whitespace-nowrap">Hoppers</button>
       </div>
 
-      <!-- PRODUCT ENTRY LIST ACCORDION BY SUPPLIER -->
-      <div id="posItemGrid" class="space-y-4">
-        <!-- Rendered via JavaScript -->
+      <!-- PRODUCT ITEMS GRID -->
+      <div id="posItemGrid" class="space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- FLOATING / STICKY BOTTOM RUNNING TOTAL BAR FOR MOBILE -->
+      <div class="sticky bottom-16 md:bottom-2 z-30 bg-surface-card/95 backdrop-blur border border-surface-subtle p-3 rounded-xl shadow-xl flex items-center justify-between gap-3">
+        <div class="flex items-center gap-4 text-xs font-mono">
+          <div>
+            <span class="text-slate-500 text-[10px] uppercase block">Sold Units</span>
+            <span id="liveTotalUnits" class="font-bold text-white text-sm">0</span>
+          </div>
+          <div>
+            <span class="text-slate-500 text-[10px] uppercase block">Leftovers</span>
+            <span id="liveTotalLeftovers" class="font-bold text-amber-400 text-sm">0</span>
+          </div>
+          <div>
+            <span class="text-slate-500 text-[10px] uppercase block">Gross Revenue</span>
+            <span id="liveGrossRevenue" class="font-bold text-accent-emerald text-base">Rs. 0</span>
+          </div>
+        </div>
+
+        <button onclick="saveShiftTally()" class="px-4 py-2 bg-accent-emerald hover:bg-accent-emeraldDark text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1.5 touch-btn">
+          <i class="fa-solid fa-check"></i> Commit
+        </button>
       </div>
     </section>
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 3: CASH RECONCILIATION & ENVELOPE COMMITS -->
+    <!-- TAB 3: CASH RECONCILIATION & DENOMINATION COUNTER -->
     <!-- ========================================================================= -->
-    <section id="view-reconcile" class="tab-content space-y-6 hidden">
-      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-6">
-        <div class="border-b border-slate-800 pb-4 flex flex-wrap items-center justify-between gap-4">
+    <section id="view-reconcile" class="tab-content space-y-4 md:space-y-6 hidden">
+      <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 md:p-5 shadow-sm space-y-4">
+        
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-surface-subtle pb-3">
           <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-scale-balanced text-brand-400"></i> End-of-Shift Cash Reconciliation
+            <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced text-accent-emerald"></i> End-of-Shift Cash Reconciliation
             </h2>
-            <p class="text-xs text-slate-400">Count physical cash in the drawer, balance envelopes, and commit net to Master Reserve.</p>
+            <p class="text-xs text-slate-400">Balance drawer notes, verify variance, and commit cash into envelopes.</p>
           </div>
           <div class="flex items-center gap-2">
-            <label class="text-xs text-slate-400">Select Shift:</label>
-            <select id="reconcileShiftSelect" onchange="loadShiftForReconcile(this.value)" class="bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none">
+            <span class="text-xs text-slate-400">Shift:</span>
+            <select id="reconcileShiftSelect" onchange="loadShiftForReconcile(this.value)" class="bg-surface-elevated border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none font-mono">
               <!-- Populated via JS -->
             </select>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- INPUT FIELDS -->
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">1. Logged Sales Revenue</label>
-              <div id="recLoggedRevDisplay" class="text-xl font-mono font-bold text-white bg-dark-800/80 px-4 py-2.5 rounded-xl border border-slate-700">Rs. 0</div>
-              <p class="text-[11px] text-slate-500 mt-1">Calculated from items sold in the tally sheet</p>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">2. Actual Till Cash In (Physical Count)</label>
-              <input type="number" id="recActualCashIn" oninput="calculateReconcileDiff()" placeholder="e.g. 18500" class="w-full bg-dark-800 border-2 border-emerald-500/50 text-emerald-300 font-mono text-xl font-bold rounded-xl px-4 py-2.5 focus:border-emerald-400 focus:outline-none">
-              <p class="text-[11px] text-slate-400 mt-1">All currency notes and coins physically counted in till</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-dark-800/40 border border-slate-700/80 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-bold text-slate-300">Till Variance (Over / Short)</div>
-                <div class="text-[11px] text-slate-500">Actual Till Cash minus Logged Sales Revenue</div>
-              </div>
-              <div id="recVarianceBadge" class="text-lg font-mono font-black text-emerald-400">Rs. 0</div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">3. [Envelope 1] Morning Suppliers Out</label>
-              <input type="number" id="recMorningSup" oninput="calculateReconcileDiff()" placeholder="e.g. 9000" class="w-full bg-dark-800 border border-slate-700 text-slate-200 font-mono text-base rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
-              <p class="text-[11px] text-slate-500 mt-1">Cash kept in Envelope 1 to pay morning deliveries tomorrow</p>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">4. [Envelope 2] Helper Wage Set-Aside</label>
-              <input type="number" id="recHelperWage" oninput="calculateReconcileDiff()" placeholder="0 or 1200" class="w-full bg-dark-800 border border-slate-700 text-slate-200 font-mono text-base rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
-              <p class="text-[11px] text-slate-500 mt-1">Daily wage (Rs. 1,200) or Rs. 0 if owner was full-time</p>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">5. Other Purchases / Expenses Out</label>
-              <input type="number" id="recOtherOut" oninput="calculateReconcileDiff()" placeholder="0" class="w-full bg-dark-800 border border-slate-700 text-slate-200 font-mono text-base rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
-              <p class="text-[11px] text-slate-500 mt-1">Fuel, emergency packaging, chicken restock paid today</p>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">6. Commit Notes / Expenses Description</label>
-              <input type="text" id="recNotes" placeholder="e.g. Power cut (-270) or Chicken restock (3,000)" class="w-full bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-xl px-4 py-2 focus:border-brand-500 focus:outline-none">
-            </div>
-          </div>
-
-          <!-- RECONCILIATION SUMMARY COCKPIT -->
-          <div class="flex flex-col justify-between space-y-6 bg-dark-850 p-6 rounded-2xl border border-slate-800">
-            <div>
-              <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-calculator text-brand-400"></i> Cash Flow Formula & Balance
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          
+          <!-- LEFT: PHYSICAL DENOMINATION DRAWER COUNTER -->
+          <div class="lg:col-span-5 bg-surface-elevated/60 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">
+                <i class="fa-solid fa-coins text-amber-400"></i> Cash Denomination Counter
               </h3>
-              
-              <div class="space-y-3 text-sm">
-                <div class="flex justify-between py-2 border-b border-slate-800">
-                  <span class="text-slate-400">Actual Cash Counted:</span>
-                  <span id="summaryActualCash" class="font-mono font-bold text-white">Rs. 0</span>
+              <button onclick="resetDenominations()" class="text-[10px] text-slate-400 hover:text-white font-mono">Reset</button>
+            </div>
+
+            <!-- Notes Grid -->
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex items-center justify-between p-1.5 rounded bg-surface-card">
+                <span class="w-16 text-slate-300">Rs. 5,000</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepDenom('5000', -1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">-</button>
+                  <input type="number" id="denom_5000" value="0" min="0" oninput="calcDenominations()" class="w-12 text-center bg-slate-900 border border-slate-700 rounded py-0.5 text-white">
+                  <button onclick="stepDenom('5000', 1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">+</button>
                 </div>
-                <div class="flex justify-between py-2 border-b border-slate-800">
-                  <span class="text-slate-400">(-) Morning Suppliers Envelope:</span>
-                  <span id="summaryMorningSup" class="font-mono text-rose-400">- Rs. 0</span>
+                <span id="sub_5000" class="w-20 text-right text-slate-400">Rs. 0</span>
+              </div>
+
+              <div class="flex items-center justify-between p-1.5 rounded bg-surface-card">
+                <span class="w-16 text-slate-300">Rs. 1,000</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepDenom('1000', -1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">-</button>
+                  <input type="number" id="denom_1000" value="0" min="0" oninput="calcDenominations()" class="w-12 text-center bg-slate-900 border border-slate-700 rounded py-0.5 text-white">
+                  <button onclick="stepDenom('1000', 1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">+</button>
                 </div>
-                <div class="flex justify-between py-2 border-b border-slate-800">
-                  <span class="text-slate-400">(-) Helper Wage Envelope:</span>
-                  <span id="summaryHelperWage" class="font-mono text-rose-400">- Rs. 0</span>
+                <span id="sub_1000" class="w-20 text-right text-slate-400">Rs. 0</span>
+              </div>
+
+              <div class="flex items-center justify-between p-1.5 rounded bg-surface-card">
+                <span class="w-16 text-slate-300">Rs. 500</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepDenom('500', -1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">-</button>
+                  <input type="number" id="denom_500" value="0" min="0" oninput="calcDenominations()" class="w-12 text-center bg-slate-900 border border-slate-700 rounded py-0.5 text-white">
+                  <button onclick="stepDenom('500', 1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">+</button>
                 </div>
-                <div class="flex justify-between py-2 border-b border-slate-800">
-                  <span class="text-slate-400">(-) Other Expenses Out:</span>
-                  <span id="summaryOtherOut" class="font-mono text-rose-400">- Rs. 0</span>
+                <span id="sub_500" class="w-20 text-right text-slate-400">Rs. 0</span>
+              </div>
+
+              <div class="flex items-center justify-between p-1.5 rounded bg-surface-card">
+                <span class="w-16 text-slate-300">Rs. 100</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepDenom('100', -1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">-</button>
+                  <input type="number" id="denom_100" value="0" min="0" oninput="calcDenominations()" class="w-12 text-center bg-slate-900 border border-slate-700 rounded py-0.5 text-white">
+                  <button onclick="stepDenom('100', 1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">+</button>
                 </div>
-                <div class="p-4 rounded-xl bg-brand-950/60 border border-brand-700/60 flex items-center justify-between">
-                  <div>
-                    <div class="text-xs uppercase font-extrabold text-brand-400">DAILY NET TO MASTER RESERVE</div>
-                    <div class="text-[11px] text-slate-300">Net physical cash added into Reserve Envelope</div>
-                  </div>
-                  <div id="summaryNetToReserve" class="text-2xl font-black font-mono text-brand-300">
-                    Rs. 0
-                  </div>
+                <span id="sub_100" class="w-20 text-right text-slate-400">Rs. 0</span>
+              </div>
+
+              <div class="flex items-center justify-between p-1.5 rounded bg-surface-card">
+                <span class="w-16 text-slate-300">Rs. 50 / 20</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepDenom('50', -1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">-</button>
+                  <input type="number" id="denom_50" value="0" min="0" oninput="calcDenominations()" class="w-12 text-center bg-slate-900 border border-slate-700 rounded py-0.5 text-white">
+                  <button onclick="stepDenom('50', 1)" class="w-7 h-7 bg-slate-800 rounded text-slate-300 touch-btn">+</button>
                 </div>
+                <span id="sub_50" class="w-20 text-right text-slate-400">Rs. 0</span>
+              </div>
+
+              <div class="flex items-center justify-between p-1.5 rounded bg-surface-card">
+                <span class="text-slate-300">Loose Coins</span>
+                <input type="number" id="denom_coins" value="0" min="0" oninput="calcDenominations()" class="w-24 text-right bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-white">
               </div>
             </div>
 
-            <button onclick="submitShiftReconciliation()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 text-base">
-              <i class="fa-solid fa-lock"></i> Commit Reconciliation & Lock Shift
+            <!-- Drawer Count Total -->
+            <div class="p-2.5 rounded bg-surface-card border border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-slate-400 uppercase font-semibold">Total Counted:</span>
+              <span id="denomTotalDisplay" class="font-bold text-accent-emerald text-sm font-mono">Rs. 0</span>
+            </div>
+            <button onclick="applyDenomToTill()" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded transition touch-btn">
+              Apply to Actual Till Cash In
             </button>
           </div>
-        </div>
-      </div>
 
-      <!-- HISTORICAL CASH COMMIT LOG TABLE -->
-      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
-        <h3 class="text-base font-bold text-white mb-4 flex items-center justify-between">
-          <span class="flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-brand-400"></i> Daily Cash Commit History</span>
-          <span class="text-xs text-slate-400 font-normal">All 17 reconciled shifts recorded</span>
-        </h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-dark-800 text-slate-400 uppercase font-bold">
-              <tr>
-                <th class="py-2.5 px-3">Date</th>
-                <th class="py-2.5 px-3">Logged Sales</th>
-                <th class="py-2.5 px-3">Actual Cash</th>
-                <th class="py-2.5 px-3">Variance</th>
-                <th class="py-2.5 px-3">Morning Sup</th>
-                <th class="py-2.5 px-3">Wage Set-Aside</th>
-                <th class="py-2.5 px-3">Other Out</th>
-                <th class="py-2.5 px-3">Net to Reserve</th>
-                <th class="py-2.5 px-3">Master Reserve</th>
-                <th class="py-2.5 px-3">Notes</th>
-              </tr>
-            </thead>
-            <tbody id="cashCommitTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ========================================================================= -->
-    <!-- VIEW: AI BILL & RECEIPT SCANNER (GEMINI 2.5 FLASH VISION) -->
-    <!-- ========================================================================= -->
-    <section id="view-bills" class="tab-content space-y-6 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-camera text-amber-400"></i> AI Bill & Receipt Vision Scanner
-          </h2>
-          <p class="text-xs text-slate-400">Attach photos of daily supplier delivery bills, chicken restock chits, or fuel receipts. Gemini 2.5 Flash extracts, audits math, and updates the database automatically.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs px-2.5 py-1 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20 font-mono">Powered by Google AI Studio</span>
-        </div>
-      </div>
-
-      <!-- UPLOAD & VERIFY CONTAINER -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- UPLOAD DROPZONE -->
-        <div class="lg:col-span-5 bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between space-y-4">
-          <div>
-            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
-              <i class="fa-solid fa-cloud-arrow-up text-brand-400"></i> 1. Snap or Upload Bill Photo
-            </h3>
-
-            <!-- TARGET SHIFT DATE -->
-            <div class="mb-4">
-              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Target Shift Date</label>
-              <input type="date" id="billTargetDate" class="w-full bg-dark-800 border border-slate-700 text-slate-200 text-sm rounded-xl px-3 py-2 focus:border-brand-500 focus:outline-none">
-              <p class="text-[11px] text-slate-500 mt-1">If the bill has a visible date, Gemini will automatically detect it.</p>
-            </div>
-
-            <!-- DRAG DROP AREA -->
-            <div id="dropZoneArea" onclick="document.getElementById('billFileInput').click()" class="border-2 border-dashed border-slate-700 hover:border-brand-500 bg-dark-850/60 rounded-2xl p-6 text-center cursor-pointer transition space-y-3 group">
-              <input type="file" id="billFileInput" accept="image/*,application/pdf" capture="environment" class="hidden" onchange="handleBillFileSelected(event)">
-              <div class="w-14 h-14 rounded-2xl bg-dark-800 group-hover:bg-brand-500/10 text-slate-400 group-hover:text-brand-400 flex items-center justify-center mx-auto text-2xl transition border border-slate-700 group-hover:border-brand-500/30">
-                <i class="fa-solid fa-receipt"></i>
+          <!-- RIGHT: RECONCILIATION INPUTS & ENVELOPE COMMITS -->
+          <div class="lg:col-span-7 space-y-3">
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">1. Logged Sales Revenue</label>
+                <div id="recLoggedRevDisplay" class="font-mono font-bold text-sm text-white bg-surface-elevated px-3 py-2 rounded-lg border border-slate-800">Rs. 0</div>
               </div>
               <div>
-                <div class="text-sm font-bold text-slate-200 group-hover:text-white">Click or Snap Bill Photo</div>
-                <div class="text-xs text-slate-400 mt-1">Supports Mobile Camera, PNG, JPG, WebP, PDF</div>
+                <label class="block text-[10px] uppercase font-semibold text-emerald-400 mb-1">2. Actual Till Cash In</label>
+                <input type="number" id="recActualCashIn" oninput="calculateReconcileDiff()" placeholder="0" class="w-full bg-surface-elevated border border-emerald-500/40 text-emerald-300 font-mono text-sm font-bold rounded-lg px-3 py-2 focus:border-accent-emerald focus:outline-none">
               </div>
-              <div id="selectedFileName" class="text-xs font-mono font-bold text-amber-400">No file selected</div>
             </div>
-          </div>
 
-          <button id="scanBillBtn" onclick="uploadAndParseBill()" disabled class="w-full py-3 bg-brand-600 hover:bg-brand-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-extrabold rounded-xl shadow-lg shadow-brand-600/20 transition flex items-center justify-center gap-2 text-sm">
-            <i class="fa-solid fa-brain"></i> Parse & Audit Bill with Gemini AI
-          </button>
-        </div>
-
-        <!-- AI EXTRACTION & VERIFICATION CARD -->
-        <div class="lg:col-span-7 bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-5">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> 2. AI Extraction & Verification
-            </h3>
-            <span id="billStatusBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-dark-800 text-slate-400 border border-slate-700">
-              Awaiting Photo
-            </span>
-          </div>
-
-          <!-- PARSING SPINNER -->
-          <div id="billLoadingSpinner" class="hidden py-12 text-center space-y-3">
-            <div class="inline-block w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-            <div class="text-sm font-bold text-slate-200">Analyzing bill with Gemini 2.5 Flash Vision...</div>
-            <div class="text-xs text-slate-400">Reading handwritten chits, supplier items, and calculating tax/totals</div>
-          </div>
-
-          <!-- EXTRACTED RESULT FORM -->
-          <div id="billResultContainer" class="space-y-4">
-            <div class="p-8 rounded-xl bg-dark-850 border border-slate-800 text-xs text-slate-400 text-center">
-              Snap or upload a photo of today's supplier chit (e.g. Delish bakery bill, PW Farm chicken invoice, gas refill, or fuel receipt) to preview extracted data.
+            <!-- Variance Tile -->
+            <div class="p-3 rounded-lg bg-surface-elevated border border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-semibold text-slate-300">Till Variance (Over / Short)</span>
+                <span class="text-[10px] text-slate-500 block">Actual Till Cash minus Logged Sales</span>
+              </div>
+              <div id="recVarianceBadge" class="text-base font-mono font-bold text-accent-emerald">Rs. 0</div>
             </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+              <div>
+                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">[Env 1] Morning Sup Out</label>
+                <input type="number" id="recMorningSup" oninput="calculateReconcileDiff()" placeholder="0" class="w-full bg-surface-elevated border border-slate-800 text-slate-100 font-mono text-xs rounded-lg px-2.5 py-1.5 focus:border-accent-emerald focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">[Env 2] Helper Wage</label>
+                <input type="number" id="recHelperWage" oninput="calculateReconcileDiff()" placeholder="0" class="w-full bg-surface-elevated border border-slate-800 text-slate-100 font-mono text-xs rounded-lg px-2.5 py-1.5 focus:border-accent-emerald focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Other Purchases Out</label>
+                <input type="number" id="recOtherOut" oninput="calculateReconcileDiff()" placeholder="0" class="w-full bg-surface-elevated border border-slate-800 text-slate-100 font-mono text-xs rounded-lg px-2.5 py-1.5 focus:border-accent-emerald focus:outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Shift Notes / Variances</label>
+              <input type="text" id="recNotes" placeholder="e.g. Clean shift or Power cut variance (-270)" class="w-full bg-surface-elevated border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:border-accent-emerald focus:outline-none">
+            </div>
+
+            <!-- NET TO RESERVE SUMMARY -->
+            <div class="p-3.5 rounded-xl bg-emerald-950/25 border border-emerald-500/30 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block">DAILY NET TO MASTER RESERVE</span>
+                <span class="text-[11px] text-slate-300">Net physical cash added into Reserve envelope</span>
+              </div>
+              <div id="summaryNetToReserve" class="text-xl font-bold font-mono text-emerald-300">Rs. 0</div>
+            </div>
+
+            <button onclick="submitShiftReconciliation()" class="w-full py-2.5 bg-accent-emerald hover:bg-accent-emeraldDark text-white font-bold rounded-lg text-xs transition shadow-sm touch-btn flex items-center justify-center gap-2">
+              <i class="fa-solid fa-lock"></i> Commit & Lock Shift Reconciliation
+            </button>
           </div>
+
         </div>
 
       </div>
 
-      <!-- SCANNED EXPENSES AUDIT HISTORY -->
-      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-receipt text-brand-400"></i> Scanned Bills & Expense Ledger Audit
-          </h3>
-          <span class="text-xs text-slate-400 font-mono">100% Attached to Shifts</span>
-        </div>
-
+      <!-- RECONCILIATION LOG TABLE -->
+      <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-history text-slate-400"></i> Cash Commit History
+        </h3>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-dark-800 text-slate-400 uppercase font-bold">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-surface-elevated text-slate-400 uppercase text-[10px]">
               <tr>
-                <th class="py-2.5 px-3">Date</th>
-                <th class="py-2.5 px-3">Supplier / Merchant</th>
-                <th class="py-2.5 px-3">Category</th>
-                <th class="py-2.5 px-3">Amount (Rs.)</th>
-                <th class="py-2.5 px-3">Payment Envelope</th>
-                <th class="py-2.5 px-3">Notes / Description</th>
-                <th class="py-2.5 px-3 text-center">Receipt Photo</th>
+                <th class="py-2 px-3">Date</th>
+                <th class="py-2 px-3">Logged Sales</th>
+                <th class="py-2 px-3">Actual Cash</th>
+                <th class="py-2 px-3">Variance</th>
+                <th class="py-2 px-3">Morning Sup</th>
+                <th class="py-2 px-3">Helper Wage</th>
+                <th class="py-2 px-3">Other Out</th>
+                <th class="py-2 px-3">Net Reserve</th>
+                <th class="py-2 px-3">Master Reserve</th>
+                <th class="py-2 px-3 font-sans">Notes</th>
               </tr>
             </thead>
-            <tbody id="scannedBillsTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
+            <tbody id="cashCommitTableBody" class="divide-y divide-slate-800 text-slate-300">
               <!-- Rendered via JS -->
             </tbody>
           </table>
@@ -635,75 +600,138 @@
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 4: CATERING CRM & WHATSAPP ORDERS -->
+    <!-- TAB 4: AI BILL & RECEIPT VISION SCANNER (GEMINI 2.5 FLASH) -->
     <!-- ========================================================================= -->
-    <section id="view-catering" class="tab-content space-y-6 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-4 rounded-2xl">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-calendar-check text-brand-400"></i> Sumiyuru Catering CRM & Order Pipeline
-          </h2>
-          <p class="text-xs text-slate-400">Manage large catering orders, guest counts (pax), advance payments, and generate WhatsApp quotations.</p>
+    <section id="view-bills" class="tab-content space-y-4 md:space-y-6 hidden">
+      <div class="bg-surface-card border border-surface-subtle p-4 md:p-5 rounded-xl shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-surface-subtle pb-3">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <i class="fa-solid fa-camera text-accent-amber"></i> AI Receipt & Delivery Bill Scanner
+            </h2>
+            <p class="text-xs text-slate-400">Upload or snap chits from PW Farm, Nirosha, Delish, or gas/fuel sheds. Gemini 2.5 Flash audits prices and auto-syncs shift expenses.</p>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-elevated text-slate-300 border border-slate-700">Gemini 2.5 Flash Vision</span>
         </div>
-        <button onclick="openNewCateringModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg transition flex items-center gap-2">
-          <i class="fa-solid fa-plus"></i> New Catering Booking
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-4">
+          <!-- UPLOAD COLUMN -->
+          <div class="lg:col-span-5 space-y-3">
+            <div>
+              <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Target Shift Date</label>
+              <input type="date" id="billTargetDate" class="w-full bg-surface-elevated border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:border-accent-emerald focus:outline-none">
+            </div>
+
+            <div onclick="document.getElementById('billFileInput').click()" class="border-2 border-dashed border-slate-700 hover:border-accent-emerald bg-surface-elevated/40 rounded-xl p-5 text-center cursor-pointer transition space-y-2">
+              <input type="file" id="billFileInput" accept="image/*,application/pdf" capture="environment" class="hidden" onchange="handleBillFileSelected(event)">
+              <div class="w-10 h-10 rounded-lg bg-surface-card flex items-center justify-center mx-auto text-slate-400 text-lg border border-slate-700">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div class="text-xs font-semibold text-slate-200">Tap to Snap Photo or Upload File</div>
+              <div class="text-[10px] text-slate-500">Camera, JPG, PNG, PDF supported</div>
+              <div id="selectedFileName" class="text-xs font-mono font-bold text-amber-400">No file selected</div>
+            </div>
+
+            <button id="scanBillBtn" onclick="uploadAndParseBill()" disabled class="w-full py-2.5 bg-accent-emerald hover:bg-accent-emeraldDark disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-2 touch-btn">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Extract & Verify with Gemini AI
+            </button>
+          </div>
+
+          <!-- VERIFICATION COLUMN -->
+          <div class="lg:col-span-7 bg-surface-elevated/40 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Extraction Review</span>
+              <span id="billStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-surface-base text-slate-400 border border-slate-800">Awaiting Photo</span>
+            </div>
+
+            <div id="billLoadingSpinner" class="hidden py-10 text-center space-y-2">
+              <div class="inline-block w-6 h-6 border-2 border-accent-emerald border-t-transparent rounded-full animate-spin"></div>
+              <div class="text-xs font-bold text-slate-200">Analyzing chit with Gemini 2.5 Flash Vision...</div>
+            </div>
+
+            <div id="billResultContainer">
+              <div class="py-8 text-center text-xs text-slate-500">
+                Snap a bill photo to preview itemized extraction and mathematical audit.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SCANNED AUDIT LOG -->
+      <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-slate-400"></i> Scanned Bills & Invoices Ledger
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-surface-elevated text-slate-400 uppercase text-[10px]">
+              <tr>
+                <th class="py-2 px-3">Date</th>
+                <th class="py-2 px-3">Supplier / Merchant</th>
+                <th class="py-2 px-3">Category</th>
+                <th class="py-2 px-3">Amount (Rs.)</th>
+                <th class="py-2 px-3">Payment Source</th>
+                <th class="py-2 px-3 font-sans">Notes</th>
+                <th class="py-2 px-3 text-center">Photo</th>
+              </tr>
+            </thead>
+            <tbody id="scannedBillsTableBody" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: CATERING CRM & WHATSAPP ORDERS -->
+    <!-- ========================================================================= -->
+    <section id="view-catering" class="tab-content space-y-4 hidden">
+      <div class="bg-surface-card border border-surface-subtle p-4 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow-sm">
+        <div>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-accent-emerald"></i> Catering Order Pipeline
+          </h2>
+          <p class="text-xs text-slate-400">Event bookings, pax calculations, advances, and WhatsApp quote generation.</p>
+        </div>
+        <button onclick="openNewCateringModal()" class="px-3.5 py-1.5 bg-accent-emerald hover:bg-accent-emeraldDark text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 touch-btn">
+          <i class="fa-solid fa-plus text-xs"></i> New Booking
         </button>
       </div>
 
-      <!-- PIPELINE STATS -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-dark-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400">Confirmed Orders Value</div>
-          <div id="cateringConfirmedVal" class="text-2xl font-bold text-emerald-400 mt-1">Rs. 64,250</div>
-        </div>
-        <div class="bg-dark-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400">Advances Collected in Hand</div>
-          <div id="cateringAdvancesVal" class="text-2xl font-bold text-brand-400 mt-1">Rs. 30,000</div>
-        </div>
-        <div class="bg-dark-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400">Pending Balances to Collect</div>
-          <div id="cateringPendingVal" class="text-2xl font-bold text-amber-400 mt-1">Rs. 34,250</div>
-        </div>
-      </div>
-
-      <!-- ORDERS LIST -->
-      <div id="cateringOrdersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div id="cateringOrdersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         <!-- Rendered via JS -->
       </div>
     </section>
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 5: INVENTORY DEMAND OPTIMIZER -->
+    <!-- TAB 6: INVENTORY DEMAND OPTIMIZER -->
     <!-- ========================================================================= -->
-    <section id="view-inventory" class="tab-content space-y-6 hidden">
-      <div class="bg-dark-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-boxes-stacked text-brand-400"></i> Inventory Demand Optimizer & Par Restock Signals
-            </h2>
-            <p class="text-xs text-slate-400">Data-driven daily ordering targets based on actual sell-through and day-of-week demand.</p>
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="px-2 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">🔥 Sell-Out Alerts</span>
-            <span class="px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">⚠️ Waste Alerts</span>
-          </div>
+    <section id="view-inventory" class="tab-content space-y-4 hidden">
+      <div class="bg-surface-card border border-surface-subtle p-4 rounded-xl shadow-sm space-y-3">
+        <div class="flex justify-between items-center border-b border-surface-subtle pb-2.5">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-accent-emerald"></i> Par Demand Optimizer & Restock Targets
+          </h2>
+          <span class="text-[10px] text-slate-400 font-mono">Day-of-Week Rules</span>
         </div>
-
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-dark-800 text-slate-400 text-xs uppercase font-bold">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-surface-elevated text-slate-400 uppercase text-[10px]">
               <tr>
-                <th class="py-3 px-4">Item Name</th>
-                <th class="py-3 px-4">Supplier</th>
-                <th class="py-3 px-4">Daily Avg Sold</th>
-                <th class="py-3 px-4">Peak Sold</th>
-                <th class="py-3 px-4">Sell-Through %</th>
-                <th class="py-3 px-4">Mon-Wed Par</th>
-                <th class="py-3 px-4">Thu-Sat Par</th>
-                <th class="py-3 px-4">Sun/Poya Par</th>
-                <th class="py-3 px-4">Action Signal</th>
+                <th class="py-2 px-3 font-sans">Item</th>
+                <th class="py-2 px-3 font-sans">Supplier</th>
+                <th class="py-2 px-3">Avg Sold</th>
+                <th class="py-2 px-3">Peak</th>
+                <th class="py-2 px-3">Sell %</th>
+                <th class="py-2 px-3">Mon-Wed</th>
+                <th class="py-2 px-3 text-accent-emerald">Thu-Sat</th>
+                <th class="py-2 px-3">Sun/Poya</th>
+                <th class="py-2 px-3 font-sans">Action Signal</th>
               </tr>
             </thead>
             <tbody id="inventoryOptimizerTable" class="divide-y divide-slate-800 text-slate-300">
@@ -716,52 +744,45 @@
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 6: DAY-OF-WEEK ANALYTICS & CLOSURE STRATEGY -->
+    <!-- TAB 7: DAY-OF-WEEK ANALYTICS & CLOSURE STRATEGY -->
     <!-- ========================================================================= -->
-    <section id="view-analytics" class="tab-content space-y-6 hidden">
-      <div class="bg-dark-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-6">
+    <section id="view-analytics" class="tab-content space-y-4 hidden">
+      <div class="bg-surface-card border border-surface-subtle p-4 rounded-xl shadow-sm space-y-4">
         <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-chart-pie text-brand-400"></i> Day-of-Week Performance & Closure Strategy
+          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-accent-emerald"></i> Day-of-Week Volume & Closure Strategy
           </h2>
-          <p class="text-xs text-slate-400">Identifies the most profitable operating shifts and minimizes food wastage on slow days.</p>
+          <p class="text-xs text-slate-400">Identify waste peaks and protect highest cash-margin shifts.</p>
         </div>
 
-        <!-- STRATEGIC RECOMMENDATION CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-5 rounded-xl bg-rose-950/30 border border-rose-800/40">
-            <div class="text-xs uppercase font-bold text-rose-400 tracking-wider">🎯 Recommended Weekly Rest Day</div>
-            <div class="text-2xl font-black text-white mt-1">CLOSE ON TUESDAY</div>
-            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-              Tuesday has the lowest daily revenue (<strong class="text-white">Rs. 15,547</strong>) and highest leftovers (<strong class="text-rose-400">58 units, 10.4% waste rate</strong>). Closing Tuesday saves ~10.4% weekly food waste & overheads without impacting peak cash flow.
-            </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="p-3.5 rounded-lg bg-rose-950/20 border border-rose-800/40 space-y-1">
+            <div class="text-[10px] uppercase font-bold text-rose-400">Recommended Rest Day</div>
+            <div class="text-base font-bold text-white">CLOSE ON TUESDAY</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">Tuesday has the lowest daily sales (<strong class="text-white">Rs. 15,547</strong>) and highest leftovers (<strong class="text-rose-400">58 items, 10.4% waste</strong>). Closing Tuesday saves ~10.4% weekly waste.</p>
           </div>
-
-          <div class="p-5 rounded-xl bg-emerald-950/30 border border-emerald-800/40">
-            <div class="text-xs uppercase font-bold text-emerald-400 tracking-wider">🛡️ Protected High-Profit Shifts</div>
-            <div class="text-2xl font-black text-white mt-1">NEVER CLOSE THU / FRI / SAT</div>
-            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-              Friday and Saturday average <strong class="text-white">Rs. 18,025/day</strong> with strong demand for dinner short eats, fried rice, and cutlets. Keep full staff and increase Delish & Kitchen pars.
-            </p>
+          <div class="p-3.5 rounded-lg bg-emerald-950/20 border border-emerald-800/40 space-y-1">
+            <div class="text-[10px] uppercase font-bold text-emerald-400">Protected Shifts</div>
+            <div class="text-base font-bold text-white">NEVER CLOSE THU / FRI / SAT</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">Thu/Fri/Sat average <strong class="text-white">Rs. 18,025/day</strong> with peak dinner short eat demand. Keep maximum pars on Delish and In-House Kitchen.</p>
           </div>
         </div>
 
-        <!-- DAY TABLE -->
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-dark-800 text-slate-400 text-xs uppercase font-bold">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-surface-elevated text-slate-400 uppercase text-[10px]">
               <tr>
-                <th class="py-3 px-4">Day of Week</th>
-                <th class="py-3 px-4">Active Shifts</th>
-                <th class="py-3 px-4">Total Revenue</th>
-                <th class="py-3 px-4">Avg Daily Rev</th>
-                <th class="py-3 px-4">Units Sold</th>
-                <th class="py-3 px-4">Leftovers (Waste)</th>
-                <th class="py-3 px-4">Sell-Through Rate</th>
-                <th class="py-3 px-4">Wastage Rate</th>
+                <th class="py-2 px-3 font-sans">Day</th>
+                <th class="py-2 px-3">Shifts</th>
+                <th class="py-2 px-3">Total Rev</th>
+                <th class="py-2 px-3">Avg Daily</th>
+                <th class="py-2 px-3">Units</th>
+                <th class="py-2 px-3">Waste</th>
+                <th class="py-2 px-3">Sell %</th>
+                <th class="py-2 px-3">Waste %</th>
               </tr>
             </thead>
-            <tbody id="dayOfWeekTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
+            <tbody id="dayOfWeekTableBody" class="divide-y divide-slate-800 text-slate-300">
               <!-- Rendered via JS -->
             </tbody>
           </table>
@@ -771,141 +792,88 @@
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 7: PRINTABLE SHIFT TALLY SHEET (A4) -->
+    <!-- TAB 8: UNIT ECONOMICS & MENU ITEMS -->
     <!-- ========================================================================= -->
-    <section id="view-printable" class="tab-content space-y-6 hidden">
-      <div class="flex justify-between items-center bg-dark-900 border border-slate-800 p-4 rounded-2xl no-print">
+    <section id="view-items" class="tab-content space-y-4 hidden">
+      <div class="bg-surface-card border border-surface-subtle p-4 rounded-xl flex justify-between items-center shadow-sm">
         <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-print text-brand-400"></i> Printable Shift Tally Sheet
-          </h2>
-          <p class="text-xs text-slate-400">Print blank daily shift worksheets for stall staff to tally stock on paper.</p>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-white">Product Catalog & Unit Economics</h2>
+          <p class="text-xs text-slate-400">18 verified items with costs, selling prices, and unit margins.</p>
         </div>
-        <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow transition flex items-center gap-2">
-          <i class="fa-solid fa-print"></i> Print Sheet (A4)
+      </div>
+
+      <div class="bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-surface-elevated text-slate-400 uppercase text-[10px]">
+            <tr>
+              <th class="py-2 px-3 font-sans">Item</th>
+              <th class="py-2 px-3 font-sans">Category</th>
+              <th class="py-2 px-3 font-sans">Supplier</th>
+              <th class="py-2 px-3 font-sans">Terms</th>
+              <th class="py-2 px-3">Cost</th>
+              <th class="py-2 px-3 text-white">Price</th>
+              <th class="py-2 px-3 text-emerald-400">Margin</th>
+              <th class="py-2 px-3">Margin %</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody" class="divide-y divide-slate-800 text-slate-300">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 9: PRINTABLE SHIFT TALLY SHEET (A4) -->
+    <!-- ========================================================================= -->
+    <section id="view-printable" class="tab-content space-y-4 hidden">
+      <div class="flex justify-between items-center bg-surface-card border border-surface-subtle p-3 rounded-xl no-print">
+        <span class="text-xs text-slate-300 font-semibold">Printable Paper Tally Clipboard Sheet</span>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-accent-emerald hover:bg-accent-emeraldDark text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 touch-btn">
+          <i class="fa-solid fa-print"></i> Print A4 Worksheet
         </button>
       </div>
 
-      <!-- PRINTABLE PAPER CONTAINER -->
-      <div id="printableArea" class="bg-white text-black p-8 rounded-2xl shadow-xl max-w-4xl mx-auto font-sans">
-        <div class="border-b-2 border-black pb-3 text-center">
-          <h2 class="text-2xl font-black uppercase tracking-wider">SUMIYURU CATERING & ROADSIDE STALL</h2>
-          <p class="text-xs font-bold text-gray-700 tracking-widest mt-0.5">DAILY SHIFT PHYSICAL TALLY & CASH AUDIT SHEET</p>
+      <div id="printableArea" class="bg-white text-black p-6 rounded-xl shadow-lg max-w-4xl mx-auto font-sans text-xs">
+        <div class="border-b-2 border-black pb-2 text-center">
+          <h2 class="text-lg font-black uppercase tracking-wider">SUMIYURU CATERING & ROADSIDE STALL</h2>
+          <p class="text-[10px] font-bold text-gray-700 uppercase">Daily Shift Physical Tally Sheet</p>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 my-4 text-xs font-semibold border-b border-gray-300 pb-3">
-          <div>Shift Date: ____________________</div>
-          <div>Cashier / Staff: ____________________</div>
-          <div>Till Float: <strong>Rs. 5,000</strong></div>
+        <div class="grid grid-cols-3 gap-2 my-3 text-[11px] border-b border-gray-300 pb-2 font-semibold">
+          <div>Date: ________________</div>
+          <div>Cashier: ________________</div>
+          <div>Float: <strong>Rs. 5,000</strong></div>
         </div>
 
-        <table class="w-full text-left text-xs border border-collapse border-black">
+        <table class="w-full text-left text-[11px] border border-black border-collapse">
           <thead>
             <tr class="bg-gray-100 border-b border-black font-bold">
-              <th class="p-2 border-r border-black">Item / Product</th>
-              <th class="p-2 border-r border-black">Supplier</th>
-              <th class="p-2 border-r border-black text-center w-20">Opening (A)</th>
-              <th class="p-2 border-r border-black text-center w-20">Leftover (B)</th>
-              <th class="p-2 border-r border-black text-center w-20">Sold (A-B)</th>
-              <th class="p-2 border-r border-black text-right w-24">Price (Rs.)</th>
-              <th class="p-2 text-right w-28">Gross (Rs.)</th>
+              <th class="p-1.5 border-r border-black">Item Description</th>
+              <th class="p-1.5 border-r border-black">Supplier</th>
+              <th class="p-1.5 border-r border-black text-center w-16">Opening</th>
+              <th class="p-1.5 border-r border-black text-center w-16">Leftover</th>
+              <th class="p-1.5 border-r border-black text-center w-16">Sold</th>
+              <th class="p-1.5 border-r border-black text-right w-20">Price</th>
+              <th class="p-1.5 text-right w-24">Gross Rev</th>
             </tr>
           </thead>
           <tbody id="printableTableBody" class="divide-y divide-black">
             <!-- Rendered via JS -->
           </tbody>
-          <tfoot>
-            <tr class="font-bold border-t-2 border-black bg-gray-100">
-              <td colspan="4" class="p-2 border-r border-black text-right">TOTAL SHIFT SALES:</td>
-              <td id="printTotalSoldCell" class="p-2 border-r border-black text-center"></td>
-              <td class="p-2 border-r border-black text-right">Total Rev:</td>
-              <td id="printTotalRevCell" class="p-2 text-right font-black"></td>
-            </tr>
-          </tfoot>
-        </table>
-
-        <!-- Cash Count Box at bottom of printed page -->
-        <div class="grid grid-cols-2 gap-4 mt-6 border border-black p-4 text-xs">
-          <div>
-            <h4 class="font-bold uppercase border-b border-gray-400 pb-1 mb-2">Till Drawer Cash Count</h4>
-            <div class="space-y-1.5 font-mono">
-              <div>Rs. 5,000 x _____ = Rs. _________</div>
-              <div>Rs. 1,000 x _____ = Rs. _________</div>
-              <div>Rs.   500 x _____ = Rs. _________</div>
-              <div>Rs.   100 x _____ = Rs. _________</div>
-              <div>Rs.    50 x _____ = Rs. _________</div>
-              <div>Coins (Rs. 20/10/5/2/1) = Rs. _________</div>
-              <div class="pt-1 font-bold border-t border-black">Total Cash Counted: Rs. ____________</div>
-            </div>
-          </div>
-          <div>
-            <h4 class="font-bold uppercase border-b border-gray-400 pb-1 mb-2">Shift Envelopes & Sign-Off</h4>
-            <div class="space-y-2">
-              <div>Morning Supplier Envelope 1: Rs. ____________</div>
-              <div>Helper Wages Envelope 2: Rs. ____________</div>
-              <div>Net Added to Master Reserve: Rs. ____________</div>
-              <div class="pt-4 flex justify-between">
-                <span>Staff Sign: ____________</span>
-                <span>Owner Verify: ____________</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 8: UNIT ECONOMICS & ITEMS CATALOG -->
-    <!-- ========================================================================= -->
-    <section id="view-items" class="tab-content space-y-6 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-dark-900 border border-slate-800 p-4 rounded-2xl">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-tags text-brand-400"></i> Unit Economics & Product Catalog
-          </h2>
-          <p class="text-xs text-slate-400">Supplier terms, settlement types (Morning_Cash vs Month_End), costs, and profit margins.</p>
-        </div>
-        <button onclick="openNewItemModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow transition flex items-center gap-2">
-          <i class="fa-solid fa-plus"></i> Add New Product
-        </button>
-      </div>
-
-      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg overflow-x-auto">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-dark-800 text-slate-400 text-xs uppercase font-bold">
-            <tr>
-              <th class="py-3 px-4">Item Name</th>
-              <th class="py-3 px-4">Category</th>
-              <th class="py-3 px-4">Supplier</th>
-              <th class="py-3 px-4">Settlement</th>
-              <th class="py-3 px-4">Unit Cost</th>
-              <th class="py-3 px-4">Selling Price</th>
-              <th class="py-3 px-4">Unit Margin</th>
-              <th class="py-3 px-4">Margin %</th>
-            </tr>
-          </thead>
-          <tbody id="itemsTableBody" class="divide-y divide-slate-800 text-slate-300 font-mono">
-            <!-- Rendered via JS -->
-          </tbody>
         </table>
       </div>
     </section>
 
 
     <!-- ========================================================================= -->
-    <!-- VIEW 9: PLAYBOOK & OPERATIONAL SOPS -->
+    <!-- TAB 10: PLAYBOOK & SOPS -->
     <!-- ========================================================================= -->
-    <section id="view-playbook" class="tab-content space-y-6 hidden">
-      <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-book-bookmark text-brand-400"></i> Daily Operational Playbook & Supplier Rules
-          </h2>
-          <p class="text-xs text-slate-400">Enforced stall protocols, supplier ordering limits, and cash reconciliation standards.</p>
-        </div>
-
-        <div id="playbookContainer" class="space-y-3">
+    <section id="view-playbook" class="tab-content space-y-3 hidden">
+      <div class="bg-surface-card border border-surface-subtle p-4 rounded-xl shadow-sm">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-white mb-3">Operational Protocols & Rules</h2>
+        <div id="playbookContainer" class="space-y-2">
           <!-- Rendered via JS -->
         </div>
       </div>
@@ -913,130 +881,176 @@
 
   </main>
 
+  <!-- MOBILE BOTTOM NAVIGATION DOCK (< 768px) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface-card/95 backdrop-blur border-t border-surface-subtle px-2 py-1 flex items-center justify-around no-print shadow-2xl">
+    <button onclick="switchTab('cockpit')" id="mTab-cockpit" class="flex flex-col items-center py-1 px-2 text-accent-emerald touch-btn">
+      <i class="fa-solid fa-gauge text-base"></i>
+      <span class="text-[10px] mt-0.5 font-medium">Cockpit</span>
+    </button>
+    <button onclick="switchTab('pos')" id="mTab-pos" class="flex flex-col items-center py-1 px-2 text-slate-400 touch-btn">
+      <i class="fa-solid fa-cash-register text-base"></i>
+      <span class="text-[10px] mt-0.5 font-medium">Shift Tally</span>
+    </button>
+    <button onclick="switchTab('reconcile')" id="mTab-reconcile" class="flex flex-col items-center py-1 px-2 text-slate-400 touch-btn">
+      <i class="fa-solid fa-scale-balanced text-base"></i>
+      <span class="text-[10px] mt-0.5 font-medium">Reconcile</span>
+    </button>
+    <button onclick="switchTab('bills')" id="mTab-bills" class="flex flex-col items-center py-1 px-2 text-slate-400 touch-btn">
+      <i class="fa-solid fa-camera text-base text-amber-400"></i>
+      <span class="text-[10px] mt-0.5 font-medium">AI Scanner</span>
+    </button>
+    <button onclick="toggleMobileMoreMenu()" class="flex flex-col items-center py-1 px-2 text-slate-400 touch-btn">
+      <i class="fa-solid fa-ellipsis text-base"></i>
+      <span class="text-[10px] mt-0.5 font-medium">More</span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MORE DRAWER -->
+  <div id="mobileMoreDrawer" class="hidden md:hidden fixed inset-0 bg-black/80 z-50 flex flex-col justify-end">
+    <div class="bg-surface-card border-t border-slate-700 rounded-t-2xl p-4 space-y-2 max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <span class="text-xs font-bold uppercase text-slate-400">More Tools</span>
+        <button onclick="toggleMobileMoreMenu()" class="text-slate-400 p-1 touch-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <button onclick="switchTab('catering'); toggleMobileMoreMenu();" class="w-full text-left p-2.5 rounded-lg bg-surface-elevated text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-calendar-check text-accent-emerald"></i> Catering CRM & WhatsApp
+      </button>
+      <button onclick="switchTab('inventory'); toggleMobileMoreMenu();" class="w-full text-left p-2.5 rounded-lg bg-surface-elevated text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-boxes-stacked text-amber-400"></i> Par Demand Optimizer
+      </button>
+      <button onclick="switchTab('analytics'); toggleMobileMoreMenu();" class="w-full text-left p-2.5 rounded-lg bg-surface-elevated text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-chart-pie text-indigo-400"></i> Day Analysis & Rest Days
+      </button>
+      <button onclick="switchTab('items'); toggleMobileMoreMenu();" class="w-full text-left p-2.5 rounded-lg bg-surface-elevated text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-tags text-slate-300"></i> Unit Economics Catalog
+      </button>
+      <button onclick="switchTab('printable'); toggleMobileMoreMenu();" class="w-full text-left p-2.5 rounded-lg bg-surface-elevated text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-print text-slate-300"></i> Printable Tally Sheet
+      </button>
+      <button onclick="switchTab('playbook'); toggleMobileMoreMenu();" class="w-full text-left p-2.5 rounded-lg bg-surface-elevated text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-book-bookmark text-slate-300"></i> Playbook & SOPs
+      </button>
+    </div>
+  </div>
+
   <!-- MODAL: HANDOVER TO DAD -->
   <div id="handoverModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-dark-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-hand-holding-dollar text-amber-400"></i> Master Reserve Handover
-        </h3>
-        <button onclick="closeHandoverModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <div class="bg-surface-card border border-slate-700 rounded-xl max-w-sm w-full p-5 shadow-2xl space-y-3 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <span class="font-bold text-white uppercase tracking-wider">Master Reserve Handover</span>
+        <button onclick="closeHandoverModal()" class="text-slate-400 hover:text-white p-1 touch-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div class="space-y-3">
+      <div class="space-y-2.5">
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Date</label>
-          <input type="date" id="handoverDate" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Handover Date</label>
+          <input type="date" id="handoverDate" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs font-mono">
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Cycle Number</label>
-          <input type="number" id="handoverCycle" value="3" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Recipient</label>
+          <input type="text" id="handoverTo" value="Dad (Owner Draw)" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs">
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Recipient</label>
-          <input type="text" id="handoverTo" value="Dad (Owner Draw)" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          <label class="block text-[10px] uppercase font-semibold text-amber-400 mb-1">Handover Amount (Rs.)</label>
+          <input type="number" id="handoverAmount" class="w-full bg-surface-elevated border border-amber-500/50 text-amber-300 font-mono text-base font-bold rounded p-2">
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Cash Amount (Rs.)</label>
-          <input type="number" id="handoverAmount" placeholder="e.g. 40350" class="w-full bg-dark-800 border-2 border-amber-500/50 text-amber-300 font-mono text-xl font-bold rounded-lg p-2">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Handover Notes</label>
-          <input type="text" id="handoverNotes" value="Handed physical reserve envelope to Dad tonight" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Notes</label>
+          <input type="text" id="handoverNotes" value="Handed reserve to Dad tonight" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs">
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-        <button onclick="closeHandoverModal()" class="px-4 py-2 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded-lg text-sm">Cancel</button>
-        <button onclick="submitHandover()" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-sm shadow">Confirm Handover & Reset</button>
+        <button onclick="closeHandoverModal()" class="px-3 py-1.5 bg-surface-elevated text-slate-300 rounded text-xs touch-btn">Cancel</button>
+        <button onclick="submitHandover()" class="px-4 py-1.5 bg-accent-amber hover:bg-amber-600 text-white font-bold rounded text-xs touch-btn">Confirm Handover</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: NEW CATERING ORDER -->
+  <!-- MODAL: CATERING BOOKING -->
   <div id="cateringModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-dark-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-calendar-plus text-brand-400"></i> Book Catering Order
-        </h3>
-        <button onclick="closeCateringModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <div class="bg-surface-card border border-slate-700 rounded-xl max-w-md w-full p-5 shadow-2xl space-y-3 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <span class="font-bold text-white uppercase tracking-wider">Book Catering Order</span>
+        <button onclick="closeCateringModal()" class="text-slate-400 hover:text-white p-1 touch-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div class="space-y-3 text-sm">
-        <div class="grid grid-cols-2 gap-3">
+      <div class="space-y-2.5">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Client Name</label>
-            <input type="text" id="catName" placeholder="Dr. Bandara" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Customer Name</label>
+            <input type="text" id="catName" placeholder="Nimal Perera" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs">
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Phone (WhatsApp)</label>
-            <input type="text" id="catPhone" placeholder="0771234567" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Event Date</label>
-            <input type="date" id="catDate" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Event Time</label>
-            <input type="text" id="catTime" placeholder="12:30 PM" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Phone</label>
+            <input type="text" id="catPhone" placeholder="0771234567" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs font-mono">
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Guest Count (Pax)</label>
-            <input type="number" id="catPax" oninput="calcCateringTotal()" value="50" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm font-mono">
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Event Date</label>
+            <input type="date" id="catDate" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs font-mono">
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Price / Pax (Rs.)</label>
-            <input type="number" id="catPricePax" oninput="calcCateringTotal()" value="650" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm font-mono">
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Total (Rs.)</label>
-            <input type="number" id="catTotal" readonly class="w-full bg-dark-850 border border-slate-700 text-emerald-400 rounded-lg p-2 text-sm font-bold font-mono">
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Time</label>
+            <input type="text" id="catTime" value="12:30 PM" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs">
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Advance Deposit Paid (Rs.)</label>
-          <input type="number" id="catAdvance" value="0" class="w-full bg-dark-800 border border-slate-700 text-brand-300 rounded-lg p-2 text-sm font-mono">
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Pax</label>
+            <input type="number" id="catPax" oninput="calcCateringTotal()" value="50" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs font-mono font-bold">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Price/Pax</label>
+            <input type="number" id="catPricePax" oninput="calcCateringTotal()" value="650" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs font-mono font-bold">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Total</label>
+            <input type="number" id="catTotal" readonly class="w-full bg-surface-base border border-slate-700 text-emerald-400 rounded p-1.5 text-xs font-mono font-bold">
+          </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Selected Menu Package</label>
-          <textarea id="catMenu" rows="2" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm" placeholder="Mix Fried Rice w/ Leg, Cutlets, Mixed Salad..."></textarea>
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Advance Deposit (Rs.)</label>
+          <input type="number" id="catAdvance" value="0" class="w-full bg-surface-elevated border border-slate-700 text-emerald-300 rounded p-1.5 text-xs font-mono">
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Delivery Address & Notes</label>
-          <input type="text" id="catNotes" placeholder="General Hospital Staff Room, 3rd Floor" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 text-sm">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Menu Items</label>
+          <textarea id="catMenu" rows="2" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs" placeholder="Mix Fried Rice w/ Leg, Cutlets, Salad..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Delivery Address & Notes</label>
+          <input type="text" id="catNotes" placeholder="Delivery location" class="w-full bg-surface-elevated border border-slate-700 text-white rounded p-1.5 text-xs">
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-        <button onclick="closeCateringModal()" class="px-4 py-2 bg-dark-800 hover:bg-dark-700 text-slate-300 rounded-lg text-sm">Cancel</button>
-        <button onclick="submitCateringOrder()" class="px-5 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-lg text-sm shadow">Confirm Booking</button>
+        <button onclick="closeCateringModal()" class="px-3 py-1.5 bg-surface-elevated text-slate-300 rounded text-xs touch-btn">Cancel</button>
+        <button onclick="submitCateringOrder()" class="px-4 py-1.5 bg-accent-emerald hover:bg-accent-emeraldDark text-white font-bold rounded text-xs touch-btn">Book Catering Order</button>
       </div>
     </div>
   </div>
 
-  <!-- APPLICATION CORE SCRIPT -->
+  <!-- APPLICATION JAVASCRIPT -->
   <script>
     let appData = {
       items: [],
-      suppliers: [],
       shifts: [],
       cockpit: null,
-      currentShift: null
+      inventory: [],
+      dow: null,
+      catering: [],
+      playbook: []
     };
 
     let cycleChartInstance = null;
+    let currentSelectedCategory = 'ALL';
 
-    // Initialization
     window.addEventListener('DOMContentLoaded', async () => {
       startLiveClock();
       setDefaultDates();
@@ -1092,42 +1106,58 @@
         renderCateringCards();
         loadBillsHistory();
       } catch (err) {
-        console.error("Failed to load initial data", err);
+        console.error("Initialization error:", err);
       }
     }
 
-    // -------------------------------------------------------------------------
-    // TAB NAVIGATION
-    // -------------------------------------------------------------------------
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-brand-600', 'text-white', 'shadow');
-        btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-dark-800');
+        btn.classList.remove('bg-accent-emerald', 'text-white', 'shadow-sm');
+        btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-surface-elevated');
       });
 
       const targetView = document.getElementById(`view-${tabId}`);
       const targetBtn = document.getElementById(`tabBtn-${tabId}`);
       if (targetView) targetView.classList.remove('hidden');
       if (targetBtn) {
-        targetBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-dark-800');
-        targetBtn.classList.add('bg-brand-600', 'text-white', 'shadow');
+        targetBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-surface-elevated');
+        targetBtn.classList.add('bg-accent-emerald', 'text-white', 'shadow-sm');
       }
+
+      // Update mobile bottom nav active state
+      ['cockpit', 'pos', 'reconcile', 'bills'].forEach(mId => {
+        const mBtn = document.getElementById(`mTab-${mId}`);
+        if (mBtn) {
+          if (mId === tabId) {
+            mBtn.classList.remove('text-slate-400');
+            mBtn.classList.add('text-accent-emerald');
+          } else {
+            mBtn.classList.remove('text-accent-emerald');
+            mBtn.classList.add('text-slate-400');
+          }
+        }
+      });
 
       if (tabId === 'cockpit' && appData.cockpit) {
         renderCockpitChart();
       }
     }
 
+    function toggleMobileMoreMenu() {
+      const drawer = document.getElementById('mobileMoreDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
     // -------------------------------------------------------------------------
-    // COCKPIT VIEW
+    // COCKPIT RENDERING
     // -------------------------------------------------------------------------
     function renderCockpit() {
       const c = appData.cockpit;
       if (!c) return;
 
       document.getElementById('c2-gross-rev').innerText = `Rs. ${c.cycle.gross_revenue.toLocaleString()}`;
-      document.getElementById('c2-daily-avg').innerText = `Daily Avg: Rs. ${Math.round(c.cycle.daily_average).toLocaleString()}`;
+      document.getElementById('c2-daily-avg').innerText = `Avg: Rs. ${Math.round(c.cycle.daily_average).toLocaleString()}/d`;
       document.getElementById('c2-cash-reserve').innerText = `Rs. ${c.envelopes.envelope_3_master_reserve.balance.toLocaleString()}`;
       document.getElementById('c2-pure-profit').innerText = `Rs. ${Math.round(c.envelopes.allocations.pure_unencumbered_owner_profit).toLocaleString()}`;
       document.getElementById('c2-run-rate').innerText = `Rs. ${Math.round(c.projections.owner_profit_30d).toLocaleString()}`;
@@ -1140,7 +1170,6 @@
       if (!ctx) return;
       if (cycleChartInstance) cycleChartInstance.destroy();
 
-      // Filter Cycle 2 shifts (Nov 3 to Nov 8)
       const shifts = appData.shifts.filter(s => s.date >= '2026-11-03' && s.date <= '2026-11-08').reverse();
       const labels = shifts.map(s => s.date.slice(5));
       const grossData = shifts.map(s => s.total_gross_revenue);
@@ -1152,16 +1181,16 @@
           labels: labels,
           datasets: [
             {
-              label: 'Gross Rev',
+              label: 'Turnover',
               data: grossData,
               backgroundColor: '#10b981',
-              borderRadius: 6
+              borderRadius: 4
             },
             {
               label: 'Net to Reserve',
               data: reserveData,
-              backgroundColor: '#3b82f6',
-              borderRadius: 6
+              backgroundColor: '#6366f1',
+              borderRadius: 4
             }
           ]
         },
@@ -1172,93 +1201,102 @@
             legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10 } } }
           },
           scales: {
-            x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
           }
         }
       });
     }
 
     // -------------------------------------------------------------------------
-    // POS / SHIFT TALLY VIEW
+    // POS TOUCH STEPS & ITEM GRID
     // -------------------------------------------------------------------------
+    function filterPosCategory(cat) {
+      currentSelectedCategory = cat;
+      document.querySelectorAll('.pos-cat-btn').forEach(btn => {
+        if (btn.innerText.includes(cat) || (cat === 'ALL' && btn.innerText.includes('All'))) {
+          btn.className = 'pos-cat-btn px-3 py-1 rounded-full bg-accent-emerald text-white font-medium whitespace-nowrap';
+        } else {
+          btn.className = 'pos-cat-btn px-3 py-1 rounded-full bg-surface-card text-slate-400 border border-slate-800 hover:text-white whitespace-nowrap';
+        }
+      });
+      renderPOSItems();
+    }
+
     function renderPOSItems() {
       const container = document.getElementById('posItemGrid');
       container.innerHTML = '';
 
-      // Group items by supplier
-      const grouped = {};
-      appData.items.forEach(it => {
-        if (!grouped[it.supplier_name]) grouped[it.supplier_name] = [];
-        grouped[it.supplier_name].push(it);
-      });
+      const itemsToRender = currentSelectedCategory === 'ALL' 
+        ? appData.items 
+        : appData.items.filter(i => i.supplier_name.toLowerCase().includes(currentSelectedCategory.toLowerCase()) || i.category.toLowerCase().includes(currentSelectedCategory.toLowerCase()));
 
-      for (const [supplier, items] of Object.entries(grouped)) {
+      itemsToRender.forEach(it => {
         const card = document.createElement('div');
-        card.className = 'bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3';
+        card.className = 'p-3 rounded-xl bg-surface-card border border-surface-subtle flex flex-wrap items-center justify-between gap-3 shadow-sm';
         
-        let header = `
-          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-            <h3 class="font-bold text-white flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
-              ${supplier}
-            </h3>
-            <span class="text-xs text-slate-400 font-mono">${items[0].settlement_type}</span>
+        card.innerHTML = `
+          <div class="min-w-[130px] flex-1">
+            <div class="font-semibold text-xs md:text-sm text-slate-100">${it.name}</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-0.5">
+              ${it.supplier_name} • <span class="text-accent-emerald font-bold">Rs. ${it.selling_price}</span> <span class="text-slate-500">(Cost Rs. ${it.unit_cost})</span>
+            </div>
           </div>
-          <div class="space-y-2">
-        `;
 
-        items.forEach(it => {
-          header += `
-            <div class="p-3 bg-dark-850 rounded-xl border border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
-              <div class="min-w-[140px]">
-                <div class="font-bold text-sm text-slate-100">${it.name}</div>
-                <div class="text-xs text-brand-400 font-mono">Sell: Rs. ${it.selling_price} | Cost: Rs. ${it.unit_cost}</div>
-              </div>
-
-              <!-- QUANTITY INPUTS -->
-              <div class="flex items-center gap-3">
-                <div class="text-center">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Opening (A)</span>
-                  <input type="number" id="start_${it.id}" value="0" min="0" oninput="updateItemSold(${it.id})" class="w-16 bg-dark-800 border border-slate-700 text-center text-white rounded-lg py-1 font-mono font-bold">
-                </div>
-
-                <div class="text-center">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Leftover (B)</span>
-                  <input type="number" id="left_${it.id}" value="0" min="0" oninput="updateItemSold(${it.id})" class="w-16 bg-dark-800 border border-slate-700 text-center text-amber-400 rounded-lg py-1 font-mono font-bold">
-                </div>
-
-                <div class="text-center min-w-[60px]">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Sold</span>
-                  <span id="sold_${it.id}" class="text-sm font-black font-mono text-emerald-400">0</span>
-                </div>
-
-                <div class="text-right min-w-[80px]">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Gross Rev</span>
-                  <span id="rev_${it.id}" class="text-sm font-bold font-mono text-white">Rs. 0</span>
-                </div>
+          <!-- TOUCH STEPPERS -->
+          <div class="flex items-center gap-3">
+            <!-- Opening A -->
+            <div class="text-center">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Opening (A)</span>
+              <div class="flex items-center gap-1 bg-surface-elevated p-0.5 rounded-lg border border-slate-800">
+                <button onclick="stepItemVal(${it.id}, 'start', -5)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded touch-btn">-5</button>
+                <input type="number" id="start_${it.id}" value="0" min="0" oninput="updateItemSold(${it.id})" class="w-12 text-center bg-transparent font-mono font-bold text-white text-xs focus:outline-none">
+                <button onclick="stepItemVal(${it.id}, 'start', 5)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded touch-btn">+5</button>
               </div>
             </div>
-          `;
-        });
 
-        header += `</div>`;
-        card.innerHTML = header;
+            <!-- Leftover B -->
+            <div class="text-center">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Leftover (B)</span>
+              <div class="flex items-center gap-1 bg-surface-elevated p-0.5 rounded-lg border border-slate-800">
+                <button onclick="stepItemVal(${it.id}, 'left', -1)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded touch-btn">-1</button>
+                <input type="number" id="left_${it.id}" value="0" min="0" oninput="updateItemSold(${it.id})" class="w-10 text-center bg-transparent font-mono font-bold text-amber-300 text-xs focus:outline-none">
+                <button onclick="stepItemVal(${it.id}, 'left', 1)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded touch-btn">+1</button>
+              </div>
+            </div>
+
+            <!-- Sold & Line Total -->
+            <div class="text-right min-w-[75px] font-mono">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Sold: <span id="sold_${it.id}" class="text-white font-bold">0</span></span>
+              <div id="rev_${it.id}" class="text-xs font-bold text-accent-emerald">Rs. 0</div>
+            </div>
+          </div>
+        `;
         container.appendChild(card);
-      }
+      });
+    }
+
+    function stepItemVal(itemId, type, delta) {
+      const input = document.getElementById(`${type}_${itemId}`);
+      if (!input) return;
+      let val = (parseInt(input.value) || 0) + delta;
+      input.value = Math.max(0, val);
+      updateItemSold(itemId);
     }
 
     function updateItemSold(itemId) {
       const it = appData.items.find(i => i.id === itemId);
       if (!it) return;
 
-      const start = parseInt(document.getElementById(`start_${itemId}`).value) || 0;
-      const left = parseInt(document.getElementById(`left_${itemId}`).value) || 0;
+      const start = parseInt(document.getElementById(`start_${itemId}`)?.value) || 0;
+      const left = parseInt(document.getElementById(`left_${itemId}`)?.value) || 0;
       const sold = Math.max(0, start - left);
       const rev = sold * it.selling_price;
 
-      document.getElementById(`sold_${itemId}`).innerText = sold;
-      document.getElementById(`rev_${itemId}`).innerText = `Rs. ${rev.toLocaleString()}`;
+      const soldEl = document.getElementById(`sold_${itemId}`);
+      const revEl = document.getElementById(`rev_${itemId}`);
+      if (soldEl) soldEl.innerText = sold;
+      if (revEl) revEl.innerText = `Rs. ${rev.toLocaleString()}`;
 
       recalcShiftTotals();
     }
@@ -1267,7 +1305,6 @@
       let totalUnits = 0;
       let totalLeft = 0;
       let totalGross = 0;
-      let totalCOGS = 0;
 
       appData.items.forEach(it => {
         const start = parseInt(document.getElementById(`start_${it.id}`)?.value) || 0;
@@ -1277,13 +1314,27 @@
         totalUnits += sold;
         totalLeft += left;
         totalGross += sold * it.selling_price;
-        totalCOGS += sold * it.unit_cost;
       });
 
       document.getElementById('liveTotalUnits').innerText = totalUnits.toLocaleString();
       document.getElementById('liveTotalLeftovers').innerText = totalLeft.toLocaleString();
       document.getElementById('liveGrossRevenue').innerText = `Rs. ${totalGross.toLocaleString()}`;
-      document.getElementById('liveTotalCOGS').innerText = `Rs. ${totalCOGS.toLocaleString()}`;
+    }
+
+    function prefillParTargets() {
+      // Prefill opening based on known optimal par targets from inventory rules
+      appData.items.forEach(it => {
+        const startInput = document.getElementById(`start_${it.id}`);
+        if (!startInput) return;
+        const rule = appData.inventory.find(r => r.item_name === it.name);
+        if (rule) {
+          startInput.value = Math.round(rule.peak_sold || rule.avg_daily_sold || 15);
+        } else {
+          startInput.value = it.category.includes('Rice') ? 15 : 20;
+        }
+        updateItemSold(it.id);
+      });
+      alert('⚡ Opening stock pre-filled with optimal day-of-week par targets!');
     }
 
     async function saveShiftTally() {
@@ -1316,18 +1367,61 @@
         });
         const result = await res.json();
         if (result.success) {
-          alert(`✅ Shift for ${shiftDate} saved successfully!\nTotal Sales: Rs. ${result.total_gross_revenue.toLocaleString()}`);
+          alert(`✅ Shift for ${shiftDate} saved successfully!\nGross Turnover: Rs. ${result.total_gross_revenue.toLocaleString()}`);
           await loadInitialData();
         } else {
-          alert('Error saving shift: ' + result.error);
+          alert('Error: ' + result.error);
         }
       } catch (e) {
-        alert('Network or server error: ' + e);
+        alert('Network error: ' + e);
       }
     }
 
     // -------------------------------------------------------------------------
-    // RECONCILIATION VIEW
+    // DENOMINATION DRAWER COUNTER
+    // -------------------------------------------------------------------------
+    function stepDenom(denom, delta) {
+      const input = document.getElementById(`denom_${denom}`);
+      if (!input) return;
+      input.value = Math.max(0, (parseInt(input.value) || 0) + delta);
+      calcDenominations();
+    }
+
+    function resetDenominations() {
+      ['5000', '1000', '500', '100', '50', 'coins'].forEach(d => {
+        const input = document.getElementById(`denom_${d}`);
+        if (input) input.value = 0;
+      });
+      calcDenominations();
+    }
+
+    function calcDenominations() {
+      const d5000 = (parseInt(document.getElementById('denom_5000')?.value) || 0) * 5000;
+      const d1000 = (parseInt(document.getElementById('denom_1000')?.value) || 0) * 1000;
+      const d500 = (parseInt(document.getElementById('denom_500')?.value) || 0) * 500;
+      const d100 = (parseInt(document.getElementById('denom_100')?.value) || 0) * 100;
+      const d50 = (parseInt(document.getElementById('denom_50')?.value) || 0) * 50;
+      const dcoins = parseFloat(document.getElementById('denom_coins')?.value) || 0;
+
+      document.getElementById('sub_5000').innerText = `Rs. ${d5000.toLocaleString()}`;
+      document.getElementById('sub_1000').innerText = `Rs. ${d1000.toLocaleString()}`;
+      document.getElementById('sub_500').innerText = `Rs. ${d500.toLocaleString()}`;
+      document.getElementById('sub_100').innerText = `Rs. ${d100.toLocaleString()}`;
+      document.getElementById('sub_50').innerText = `Rs. ${d50.toLocaleString()}`;
+
+      const total = d5000 + d1000 + d500 + d100 + d50 + dcoins;
+      document.getElementById('denomTotalDisplay').innerText = `Rs. ${total.toLocaleString()}`;
+      return total;
+    }
+
+    function applyDenomToTill() {
+      const total = calcDenominations();
+      document.getElementById('recActualCashIn').value = total;
+      calculateReconcileDiff();
+    }
+
+    // -------------------------------------------------------------------------
+    // RECONCILIATION LOGIC
     // -------------------------------------------------------------------------
     function renderReconcileDropdown() {
       const select = document.getElementById('reconcileShiftSelect');
@@ -1375,19 +1469,15 @@
       const badge = document.getElementById('recVarianceBadge');
       if (variance === 0) {
         badge.innerText = 'Rs. 0 (Balanced)';
-        badge.className = 'text-lg font-mono font-black text-emerald-400';
+        badge.className = 'text-base font-mono font-bold text-accent-emerald';
       } else if (variance > 0) {
         badge.innerText = `+ Rs. ${variance.toLocaleString()} (Over)`;
-        badge.className = 'text-lg font-mono font-black text-brand-400';
+        badge.className = 'text-base font-mono font-bold text-emerald-400';
       } else {
         badge.innerText = `- Rs. ${Math.abs(variance).toLocaleString()} (Short)`;
-        badge.className = 'text-lg font-mono font-black text-rose-400';
+        badge.className = 'text-base font-mono font-bold text-rose-400';
       }
 
-      document.getElementById('summaryActualCash').innerText = `Rs. ${actualCash.toLocaleString()}`;
-      document.getElementById('summaryMorningSup').innerText = `- Rs. ${morningSup.toLocaleString()}`;
-      document.getElementById('summaryHelperWage').innerText = `- Rs. ${helperWage.toLocaleString()}`;
-      document.getElementById('summaryOtherOut').innerText = `- Rs. ${otherOut.toLocaleString()}`;
       document.getElementById('summaryNetToReserve').innerText = `Rs. ${netToReserve.toLocaleString()}`;
     }
 
@@ -1429,21 +1519,265 @@
 
       appData.shifts.forEach(s => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-dark-800/40';
+        tr.className = 'hover:bg-surface-elevated';
         tr.innerHTML = `
-          <td class="py-2.5 px-3 font-semibold text-white">${s.date}</td>
-          <td class="py-2.5 px-3 text-slate-300">Rs. ${s.total_gross_revenue.toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-emerald-400 font-bold">Rs. ${s.actual_till_cash_in.toLocaleString()}</td>
-          <td class="py-2.5 px-3 ${s.till_variance < 0 ? 'text-rose-400' : 'text-slate-300'}">Rs. ${s.till_variance.toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-slate-400">Rs. ${s.morning_suppliers_out.toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-slate-400">Rs. ${s.helper_wage_out.toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-slate-400">Rs. ${s.other_purchases_out.toLocaleString()}</td>
-          <td class="py-2.5 px-3 font-bold text-brand-300">Rs. ${s.daily_net_to_reserve.toLocaleString()}</td>
-          <td class="py-2.5 px-3 font-extrabold text-brand-400">Rs. ${s.master_reserve_balance.toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-xs text-slate-400 max-w-xs truncate">${s.notes || ''}</td>
+          <td class="py-2 px-3 font-semibold text-white">${s.date}</td>
+          <td class="py-2 px-3 text-slate-300">Rs. ${s.total_gross_revenue.toLocaleString()}</td>
+          <td class="py-2 px-3 text-accent-emerald font-bold">Rs. ${s.actual_till_cash_in.toLocaleString()}</td>
+          <td class="py-2 px-3 ${s.till_variance < 0 ? 'text-rose-400' : 'text-slate-300'}">Rs. ${s.till_variance.toLocaleString()}</td>
+          <td class="py-2 px-3 text-slate-400">Rs. ${s.morning_suppliers_out.toLocaleString()}</td>
+          <td class="py-2 px-3 text-slate-400">Rs. ${s.helper_wage_out.toLocaleString()}</td>
+          <td class="py-2 px-3 text-slate-400">Rs. ${s.other_purchases_out.toLocaleString()}</td>
+          <td class="py-2 px-3 font-bold text-emerald-300">Rs. ${s.daily_net_to_reserve.toLocaleString()}</td>
+          <td class="py-2 px-3 font-bold text-accent-emerald">Rs. ${s.master_reserve_balance.toLocaleString()}</td>
+          <td class="py-2 px-3 text-[11px] text-slate-400 font-sans max-w-xs truncate">${s.notes || ''}</td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    // -------------------------------------------------------------------------
+    // AI BILL SCANNER
+    // -------------------------------------------------------------------------
+    let currentSelectedBillFile = null;
+
+    function handleBillFileSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      currentSelectedBillFile = file;
+      document.getElementById('selectedFileName').innerText = `📄 ${file.name} (${Math.round(file.size / 1024)} KB)`;
+      document.getElementById('scanBillBtn').disabled = false;
+    }
+
+    async function uploadAndParseBill() {
+      if (!currentSelectedBillFile) return;
+
+      const targetDate = document.getElementById('billTargetDate').value || new Date().toISOString().split('T')[0];
+      const formData = new FormData();
+      formData.append('receipt_image', currentSelectedBillFile);
+      formData.append('target_date', targetDate);
+
+      const spinner = document.getElementById('billLoadingSpinner');
+      const container = document.getElementById('billResultContainer');
+      const badge = document.getElementById('billStatusBadge');
+      const btn = document.getElementById('scanBillBtn');
+
+      spinner.classList.remove('hidden');
+      container.classList.add('hidden');
+      btn.disabled = true;
+      badge.innerText = 'Analyzing...';
+      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20';
+
+      try {
+        const res = await fetch('/api/bills/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          renderExtractedBill(data);
+        } else {
+          alert('Parse error: ' + (data.error || 'Failed'));
+          badge.innerText = 'Failed';
+        }
+      } catch (err) {
+        alert('Network error: ' + err);
+      } finally {
+        spinner.classList.add('hidden');
+        container.classList.remove('hidden');
+        btn.disabled = false;
+      }
+    }
+
+    function renderExtractedBill(data) {
+      const p = data.parsed;
+      const badge = document.getElementById('billStatusBadge');
+      badge.innerText = p.verification_status === 'VERIFIED' ? '✅ VERIFIED' : '⚠️ REVIEW';
+      badge.className = p.verification_status === 'VERIFIED' 
+        ? 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+        : 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20';
+
+      let lineItemsHtml = '';
+      if (p.line_items && p.line_items.length > 0) {
+        lineItemsHtml = `
+          <div class="border border-slate-800 rounded-lg overflow-hidden mt-2 font-mono text-xs">
+            <table class="w-full text-left">
+              <thead class="bg-surface-elevated text-slate-400 text-[10px] uppercase">
+                <tr>
+                  <th class="py-1.5 px-2.5 font-sans">Item</th>
+                  <th class="py-1.5 px-2.5 text-center">Qty</th>
+                  <th class="py-1.5 px-2.5 text-right">Price</th>
+                  <th class="py-1.5 px-2.5 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-300">
+                ${p.line_items.map(it => `
+                  <tr>
+                    <td class="py-1 px-2.5 font-sans text-white">${it.item_name}</td>
+                    <td class="py-1 px-2.5 text-center">${it.quantity}</td>
+                    <td class="py-1 px-2.5 text-right">Rs. ${it.unit_price}</td>
+                    <td class="py-1 px-2.5 text-right text-accent-emerald font-bold">Rs. ${it.total_price}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      const container = document.getElementById('billResultContainer');
+      container.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex gap-3 p-3 rounded-lg bg-surface-elevated border border-slate-800 items-start">
+            <img src="${data.image_url}" onclick="openReceiptModal('${data.image_url}')" class="w-16 h-20 object-cover rounded border border-slate-700 cursor-pointer shadow">
+            <div class="flex-1 text-xs space-y-1">
+              <div class="font-bold text-white text-sm">${p.vendor_name}</div>
+              <div class="text-[11px] text-slate-300">${p.summary_note || 'Parsed chit'}</div>
+              <div class="text-[10px] text-accent-emerald font-mono">
+                Items Total: Rs. ${p.calculated_sum.toLocaleString()} | Bill Total: Rs. ${p.total_amount.toLocaleString()}
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-0.5">Vendor</label>
+              <input type="text" id="confirmVendor" value="${p.vendor_name}" class="w-full bg-surface-card border border-slate-700 text-white rounded p-1.5 font-semibold">
+            </div>
+            <div>
+              <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-0.5">Date</label>
+              <input type="date" id="confirmDate" value="${p.bill_date || data.target_date}" class="w-full bg-surface-card border border-slate-700 text-white rounded p-1.5 font-mono">
+            </div>
+            <div>
+              <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-0.5">Amount (Rs.)</label>
+              <input type="number" id="confirmAmount" value="${p.total_amount}" class="w-full bg-surface-card border border-emerald-500/40 text-emerald-300 font-mono font-bold rounded p-1.5">
+            </div>
+            <div>
+              <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-0.5">Category</label>
+              <select id="confirmCategory" class="w-full bg-surface-card border border-slate-700 text-white rounded p-1.5">
+                <option ${p.suggested_category === 'Chicken & Meat' ? 'selected' : ''}>Chicken & Meat</option>
+                <option ${p.suggested_category === 'Morning Delivery Cash' ? 'selected' : ''}>Morning Delivery Cash</option>
+                <option ${p.suggested_category === 'Packaging & Supplies' ? 'selected' : ''}>Packaging & Supplies</option>
+                <option ${p.suggested_category === 'Fuel & Transport' ? 'selected' : ''}>Fuel & Transport</option>
+                <option ${p.suggested_category === 'Utilities & Gas' ? 'selected' : ''}>Utilities & Gas</option>
+                <option ${p.suggested_category === 'Other Expenses' ? 'selected' : ''}>Other Expenses</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-0.5">Payment Source</label>
+            <select id="confirmPaymentSource" class="w-full bg-surface-card border border-slate-700 text-amber-300 text-xs rounded p-1.5 font-semibold">
+              <option ${p.suggested_payment_source === 'Master Reserve' ? 'selected' : ''}>Master Reserve</option>
+              <option ${p.suggested_payment_source === 'Morning Cash Envelope' ? 'selected' : ''}>Morning Cash Envelope</option>
+              <option ${p.suggested_payment_source === 'Direct Till' ? 'selected' : ''}>Direct Till</option>
+            </select>
+          </div>
+
+          ${lineItemsHtml}
+
+          <button onclick="commitVerifiedBill('${data.image_url}')" class="w-full py-2 bg-accent-emerald hover:bg-accent-emeraldDark text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5 touch-btn">
+            <i class="fa-solid fa-check"></i> Commit Bill to Shift Expenses (Rs. ${p.total_amount.toLocaleString()})
+          </button>
+        </div>
+      `;
+    }
+
+    async function commitVerifiedBill(imageUrl) {
+      const payload = {
+        date: document.getElementById('confirmDate').value,
+        vendor_name: document.getElementById('confirmVendor').value,
+        amount: parseFloat(document.getElementById('confirmAmount').value) || 0,
+        category: document.getElementById('confirmCategory').value,
+        payment_source: document.getElementById('confirmPaymentSource').value,
+        notes: `AI Bill: ${document.getElementById('confirmVendor').value}`,
+        image_path: imageUrl,
+        auto_update_shift: true
+      };
+
+      try {
+        const res = await fetch('/api/bills/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`✅ Bill for Rs. ${payload.amount.toLocaleString()} committed to shift ${payload.date}!`);
+          document.getElementById('billFileInput').value = '';
+          currentSelectedBillFile = null;
+          document.getElementById('selectedFileName').innerText = 'No file selected';
+          document.getElementById('scanBillBtn').disabled = true;
+          document.getElementById('billStatusBadge').innerText = 'Committed';
+          document.getElementById('billResultContainer').innerHTML = `
+            <div class="py-6 text-center text-xs text-emerald-400 font-bold">
+              ✅ Bill committed to shift ${payload.date}! Ready for next photo.
+            </div>
+          `;
+          await loadInitialData();
+          await loadBillsHistory();
+        } else {
+          alert('Error: ' + result.error);
+        }
+      } catch (err) {
+        alert('Network error: ' + err);
+      }
+    }
+
+    async function loadBillsHistory() {
+      try {
+        const res = await fetch('/api/bills/history');
+        const rows = await res.json();
+        const tbody = document.getElementById('scannedBillsTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-surface-elevated';
+          tr.innerHTML = `
+            <td class="py-2 px-3 font-semibold text-white">${r.date}</td>
+            <td class="py-2 px-3 text-slate-200 font-sans font-medium">${r.supplier_name}</td>
+            <td class="py-2 px-3 text-slate-400 font-sans">${r.category}</td>
+            <td class="py-2 px-3 text-accent-emerald font-bold">Rs. ${r.amount.toLocaleString()}</td>
+            <td class="py-2 px-3 text-slate-300 text-[11px] font-sans">${r.payment_source}</td>
+            <td class="py-2 px-3 text-slate-400 font-sans text-[11px] max-w-xs truncate">${r.receipt_note || ''}</td>
+            <td class="py-2 px-3 text-center">
+              ${r.image_path ? `
+                <button onclick="openReceiptModal('${r.image_path}')" class="px-2 py-0.5 bg-slate-800 text-accent-emerald rounded text-[10px] touch-btn">
+                  View
+                </button>
+              ` : '<span class="text-slate-600">—</span>'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('History load error', e);
+      }
+    }
+
+    function openReceiptModal(url) {
+      let modal = document.getElementById('receiptPreviewModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'receiptPreviewModal';
+        modal.className = 'fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        document.body.appendChild(modal);
+      }
+      modal.innerHTML = `
+        <div class="relative bg-surface-card border border-slate-700 rounded-xl max-w-xl max-h-[85vh] overflow-hidden p-3 flex flex-col">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <span class="text-xs font-bold text-white">Receipt Image</span>
+            <button onclick="document.getElementById('receiptPreviewModal').remove()" class="text-slate-400 hover:text-white p-1 touch-btn"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="p-2 overflow-auto flex-1 flex items-center justify-center">
+            <img src="${url}" class="max-w-full max-h-[70vh] object-contain rounded">
+          </div>
+        </div>
+      `;
     }
 
     // -------------------------------------------------------------------------
@@ -1455,16 +1789,15 @@
 
       appData.catering.forEach(order => {
         const card = document.createElement('div');
-        card.className = 'bg-dark-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-4';
+        card.className = 'bg-surface-card border border-surface-subtle rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3';
 
         const whatsappText = encodeURIComponent(
-          `*Sumiyuru Catering Quotation & Booking Confirmation*\n\n` +
-          `Hello ${order.customer_name},\n` +
-          `Event: ${order.event_type}\n` +
-          `Date: ${order.event_date} at ${order.event_time || 'TBD'}\n` +
+          `*Sumiyuru Catering Booking & Quotation*\n\n` +
+          `Client: ${order.customer_name}\n` +
+          `Date: ${order.event_date} (${order.event_time || ''})\n` +
           `Pax: ${order.pax_count} persons (@ Rs. ${order.price_per_pax}/pax)\n` +
           `Total Amount: Rs. ${order.total_amount.toLocaleString()}\n` +
-          `Advance Paid: Rs. ${order.advance_paid.toLocaleString()}\n` +
+          `Advance Deposit: Rs. ${order.advance_paid.toLocaleString()}\n` +
           `Balance Due: Rs. ${(order.total_amount - order.advance_paid).toLocaleString()}\n\n` +
           `Menu: ${order.menu_description}\n\n` +
           `Thank you for choosing Sumiyuru Catering!`
@@ -1472,55 +1805,52 @@
 
         card.innerHTML = `
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
               <div>
-                <h3 class="font-bold text-white text-base">${order.customer_name}</h3>
-                <div class="text-xs text-slate-400 font-mono">${order.phone}</div>
+                <h3 class="font-bold text-white text-xs md:text-sm">${order.customer_name}</h3>
+                <span class="text-[11px] text-slate-400 font-mono">${order.phone}</span>
               </div>
-              <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${
                 order.order_status === 'Confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-              }">
-                ${order.order_status}
-              </span>
+              }">${order.order_status}</span>
             </div>
 
-            <div class="mt-3 space-y-2 text-xs text-slate-300">
-              <div class="flex justify-between">
-                <span class="text-slate-400">Event Date:</span>
-                <span class="font-bold text-white">${order.event_date} (${order.event_time || ''})</span>
+            <div class="mt-2.5 space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-500">Date:</span>
+                <span class="font-semibold text-white font-mono">${order.event_date}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Pax Count:</span>
-                <span class="font-bold text-emerald-400">${order.pax_count} pax (@ Rs. ${order.price_per_pax})</span>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-500">Guests:</span>
+                <span class="font-bold text-accent-emerald font-mono">${order.pax_count} pax (@ Rs. ${order.price_per_pax})</span>
               </div>
-              <div class="flex justify-between border-t border-slate-800 pt-1">
-                <span class="text-slate-400">Total:</span>
-                <span class="font-mono font-bold text-white">Rs. ${order.total_amount.toLocaleString()}</span>
+              <div class="flex justify-between border-t border-slate-800/80 pt-1 font-mono">
+                <span class="text-slate-500 font-sans">Total:</span>
+                <span class="font-bold text-white">Rs. ${order.total_amount.toLocaleString()}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Advance Paid:</span>
-                <span class="font-mono font-bold text-brand-300">Rs. ${order.advance_paid.toLocaleString()}</span>
+              <div class="flex justify-between font-mono">
+                <span class="text-slate-500 font-sans">Advance:</span>
+                <span class="font-bold text-emerald-400">Rs. ${order.advance_paid.toLocaleString()}</span>
               </div>
-              <div class="flex justify-between font-bold">
-                <span class="text-slate-400">Balance Due:</span>
-                <span class="font-mono text-amber-400">Rs. ${(order.total_amount - order.advance_paid).toLocaleString()}</span>
+              <div class="flex justify-between font-mono">
+                <span class="text-slate-500 font-sans">Balance:</span>
+                <span class="font-bold text-amber-400">Rs. ${(order.total_amount - order.advance_paid).toLocaleString()}</span>
               </div>
-              <div class="p-2.5 rounded-lg bg-dark-850 border border-slate-800 text-[11px] text-slate-300 mt-2">
-                <strong>Menu:</strong> ${order.menu_description}
+              <div class="p-2 rounded bg-surface-elevated text-[11px] text-slate-300 mt-2">
+                ${order.menu_description}
               </div>
             </div>
           </div>
 
-          <div class="pt-3 border-t border-slate-800 flex gap-2">
-            <a href="https://wa.me/94${order.phone.replace(/^0/, '')}?text=${whatsappText}" target="_blank" class="flex-1 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition">
-              <i class="fa-brands fa-whatsapp text-sm"></i> Send Quote
+          <div class="pt-2 border-t border-slate-800 flex gap-2">
+            <a href="https://wa.me/94${order.phone.replace(/^0/, '')}?text=${whatsappText}" target="_blank" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded flex items-center justify-center gap-1.5 transition touch-btn">
+              <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Quote
             </a>
-            <button onclick="deleteCateringOrder(${order.id})" class="px-3 py-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-800/40 text-rose-300 rounded-xl text-xs">
+            <button onclick="deleteCateringOrder(${order.id})" class="px-2.5 py-1.5 bg-surface-elevated hover:bg-rose-950/40 text-rose-400 rounded text-xs border border-slate-800 touch-btn">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
         `;
-
         container.appendChild(card);
       });
     }
@@ -1546,8 +1876,8 @@
         event_date: document.getElementById('catDate').value,
         event_time: document.getElementById('catTime').value,
         pax_count: parseInt(document.getElementById('catPax').value) || 50,
-        price_per_pax: parseFloat(document.getElementById('catPricePax').value) || 600,
-        total_amount: parseFloat(document.getElementById('catTotal').value) || 30000,
+        price_per_pax: parseFloat(document.getElementById('catPricePax').value) || 650,
+        total_amount: parseFloat(document.getElementById('catTotal').value) || 32500,
         advance_paid: parseFloat(document.getElementById('catAdvance').value) || 0,
         menu_description: document.getElementById('catMenu').value,
         notes: document.getElementById('catNotes').value
@@ -1573,138 +1903,113 @@
     }
 
     async function deleteCateringOrder(id) {
-      if (!confirm('Are you sure you want to delete this catering order?')) return;
+      if (!confirm('Cancel and delete this catering order?')) return;
       try {
         await fetch(`/api/catering/${id}`, { method: 'DELETE' });
         await loadInitialData();
       } catch (e) {
-        alert('Error deleting order: ' + e);
+        alert('Error: ' + e);
       }
     }
 
     // -------------------------------------------------------------------------
-    // INVENTORY OPTIMIZER VIEW
+    // INVENTORY, DAY OF WEEK, PRINTABLE, PLAYBOOK
     // -------------------------------------------------------------------------
     function renderInventoryTable() {
       const tbody = document.getElementById('inventoryOptimizerTable');
       tbody.innerHTML = '';
-
       appData.inventory.forEach(r => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-dark-800/40';
-
-        const isSellOut = r.action_signal && r.action_signal.includes('100%');
-        const isWaste = r.action_signal && r.action_signal.includes('waste');
-
+        tr.className = 'hover:bg-surface-elevated';
         tr.innerHTML = `
-          <td class="py-3 px-4 font-bold text-white">${r.item_name}</td>
-          <td class="py-3 px-4 text-slate-400">${r.supplier_name}</td>
-          <td class="py-3 px-4 font-mono">${r.avg_daily_sold}</td>
-          <td class="py-3 px-4 font-mono font-bold text-emerald-400">${r.peak_sold}</td>
-          <td class="py-3 px-4 font-mono">${r.sell_through_pct}%</td>
-          <td class="py-3 px-4 font-mono text-slate-300">${r.mon_wed_target}</td>
-          <td class="py-3 px-4 font-mono font-bold text-brand-300">${r.thu_sat_target}</td>
-          <td class="py-3 px-4 font-mono text-slate-300">${r.sun_poya_target}</td>
-          <td class="py-3 px-4 text-xs font-semibold ${isSellOut ? 'text-amber-400' : isWaste ? 'text-rose-400' : 'text-slate-300'}">${r.action_signal}</td>
+          <td class="py-2 px-3 font-medium text-white font-sans">${r.item_name}</td>
+          <td class="py-2 px-3 text-slate-400 font-sans">${r.supplier_name}</td>
+          <td class="py-2 px-3">${r.avg_daily_sold}</td>
+          <td class="py-2 px-3 font-bold text-accent-emerald">${r.peak_sold}</td>
+          <td class="py-2 px-3">${r.sell_through_pct}%</td>
+          <td class="py-2 px-3">${r.mon_wed_target}</td>
+          <td class="py-2 px-3 font-bold text-accent-emerald">${r.thu_sat_target}</td>
+          <td class="py-2 px-3">${r.sun_poya_target}</td>
+          <td class="py-2 px-3 font-sans text-[11px] ${r.action_signal.includes('100%') ? 'text-amber-400' : r.action_signal.includes('waste') ? 'text-rose-400' : 'text-slate-300'}">${r.action_signal}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // -------------------------------------------------------------------------
-    // DAY-OF-WEEK VIEW
-    // -------------------------------------------------------------------------
     function renderDayOfWeekTable() {
       const tbody = document.getElementById('dayOfWeekTableBody');
       tbody.innerHTML = '';
-
       appData.dow.days.forEach(d => {
         const tr = document.createElement('tr');
         const isTue = d.day_name === 'Tuesday';
-        const isPeak = ['Thursday', 'Friday', 'Saturday'].includes(d.day_name);
-
-        tr.className = isTue ? 'bg-rose-950/20 hover:bg-rose-950/30' : isPeak ? 'bg-emerald-950/20 hover:bg-emerald-950/30' : 'hover:bg-dark-800/40';
+        tr.className = isTue ? 'bg-rose-950/20 hover:bg-rose-950/30' : 'hover:bg-surface-elevated';
         tr.innerHTML = `
-          <td class="py-3 px-4 font-bold ${isTue ? 'text-rose-400' : isPeak ? 'text-emerald-400' : 'text-white'}">${d.day_name}</td>
-          <td class="py-3 px-4">${d.active_days} days</td>
-          <td class="py-3 px-4">Rs. ${d.total_revenue.toLocaleString()}</td>
-          <td class="py-3 px-4 font-bold ${isTue ? 'text-rose-300' : 'text-white'}">Rs. ${d.avg_revenue.toLocaleString()}</td>
-          <td class="py-3 px-4">${d.total_sold}</td>
-          <td class="py-3 px-4 font-bold ${d.total_leftovers > 20 ? 'text-rose-400' : 'text-slate-400'}">${d.total_leftovers}</td>
-          <td class="py-3 px-4">${d.sell_through_rate}%</td>
-          <td class="py-3 px-4 font-bold ${d.wastage_rate > 8 ? 'text-rose-400' : 'text-slate-300'}">${d.wastage_rate}%</td>
+          <td class="py-2 px-3 font-sans font-semibold ${isTue ? 'text-rose-400' : 'text-white'}">${d.day_name}</td>
+          <td class="py-2 px-3">${d.active_days}</td>
+          <td class="py-2 px-3">Rs. ${d.total_revenue.toLocaleString()}</td>
+          <td class="py-2 px-3 font-bold ${isTue ? 'text-rose-400' : 'text-slate-200'}">Rs. ${d.avg_revenue.toLocaleString()}</td>
+          <td class="py-2 px-3">${d.total_sold}</td>
+          <td class="py-2 px-3 font-bold ${d.total_leftovers > 20 ? 'text-rose-400' : 'text-slate-400'}">${d.total_leftovers}</td>
+          <td class="py-2 px-3">${d.sell_through_rate}%</td>
+          <td class="py-2 px-3 font-bold ${d.wastage_rate > 8 ? 'text-rose-400' : 'text-slate-400'}">${d.wastage_rate}%</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // -------------------------------------------------------------------------
-    // PRINTABLE TALLY SHEET VIEW
-    // -------------------------------------------------------------------------
     function renderPrintableSheet() {
       const tbody = document.getElementById('printableTableBody');
       tbody.innerHTML = '';
-
       appData.items.forEach(it => {
         const tr = document.createElement('tr');
-        tr.className = 'border-b border-gray-300';
+        tr.className = 'border-b border-black';
         tr.innerHTML = `
-          <td class="p-2 border-r border-black font-semibold">${it.name}</td>
-          <td class="p-2 border-r border-black text-gray-700">${it.supplier_name}</td>
-          <td class="p-2 border-r border-black text-center"></td>
-          <td class="p-2 border-r border-black text-center"></td>
-          <td class="p-2 border-r border-black text-center"></td>
-          <td class="p-2 border-r border-black text-right font-mono">Rs. ${it.selling_price}</td>
-          <td class="p-2 text-right"></td>
+          <td class="p-1 border-r border-black font-semibold">${it.name}</td>
+          <td class="p-1 border-r border-black text-gray-700">${it.supplier_name}</td>
+          <td class="p-1 border-r border-black text-center"></td>
+          <td class="p-1 border-r border-black text-center"></td>
+          <td class="p-1 border-r border-black text-center"></td>
+          <td class="p-1 border-r border-black text-right font-mono">Rs. ${it.selling_price}</td>
+          <td class="p-1 text-right"></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // -------------------------------------------------------------------------
-    // ITEMS CATALOG VIEW
-    // -------------------------------------------------------------------------
     function renderItemsTable() {
       const tbody = document.getElementById('itemsTableBody');
       tbody.innerHTML = '';
-
       appData.items.forEach(it => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-dark-800/40';
+        tr.className = 'hover:bg-surface-elevated';
         tr.innerHTML = `
-          <td class="py-3 px-4 font-bold text-white">${it.name}</td>
-          <td class="py-3 px-4 text-slate-400">${it.category}</td>
-          <td class="py-3 px-4 text-brand-300">${it.supplier_name}</td>
-          <td class="py-3 px-4 text-slate-400">${it.settlement_type}</td>
-          <td class="py-3 px-4 text-slate-300">Rs. ${it.unit_cost}</td>
-          <td class="py-3 px-4 text-white font-bold">Rs. ${it.selling_price}</td>
-          <td class="py-3 px-4 text-emerald-400 font-bold">Rs. ${it.unit_margin}</td>
-          <td class="py-3 px-4 text-emerald-300">${it.margin_pct}%</td>
+          <td class="py-2 px-3 font-sans font-semibold text-white">${it.name}</td>
+          <td class="py-2 px-3 font-sans text-slate-400">${it.category}</td>
+          <td class="py-2 px-3 font-sans text-emerald-400">${it.supplier_name}</td>
+          <td class="py-2 px-3 font-sans text-slate-400">${it.settlement_type}</td>
+          <td class="py-2 px-3 text-slate-400">Rs. ${it.unit_cost}</td>
+          <td class="py-2 px-3 text-white font-bold">Rs. ${it.selling_price}</td>
+          <td class="py-2 px-3 text-accent-emerald font-bold">Rs. ${it.unit_margin}</td>
+          <td class="py-2 px-3 text-emerald-300 font-bold">${it.margin_pct}%</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // -------------------------------------------------------------------------
-    // PLAYBOOK VIEW
-    // -------------------------------------------------------------------------
     function renderPlaybook() {
       const container = document.getElementById('playbookContainer');
       container.innerHTML = '';
-
       appData.playbook.forEach(rule => {
         const div = document.createElement('div');
-        div.className = 'p-4 rounded-xl bg-dark-850 border border-slate-800 flex items-start gap-3';
+        div.className = 'p-3 rounded-lg bg-surface-elevated border border-slate-800 text-xs flex items-start gap-2.5';
         div.innerHTML = `
-          <span class="px-2.5 py-1 rounded text-xs font-bold uppercase ${
-            rule.priority === 'HIGH' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+            rule.priority === 'HIGH' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
           }">${rule.priority}</span>
           <div class="flex-1">
-            <div class="font-bold text-white text-sm">${rule.category}</div>
-            <p class="text-xs text-slate-300 mt-1 leading-relaxed">${rule.rule_description}</p>
-            <div class="mt-2 text-[11px] text-brand-400 flex items-center gap-1">
-              <i class="fa-solid fa-bullseye"></i> Target Impact: ${rule.target_impact}
-            </div>
+            <div class="font-bold text-white">${rule.category}</div>
+            <p class="text-slate-300 text-[11px] mt-0.5">${rule.rule_description}</p>
+            <div class="text-[10px] text-accent-emerald mt-1">Impact: ${rule.target_impact}</div>
           </div>
         `;
         container.appendChild(div);
@@ -1712,7 +2017,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // HANDOVER MODAL
+    // HANDOVER
     // -------------------------------------------------------------------------
     function openHandoverModal() {
       document.getElementById('handoverAmount').value = appData.cockpit ? appData.cockpit.envelopes.envelope_3_master_reserve.balance : 40350;
@@ -1726,7 +2031,7 @@
     async function submitHandover() {
       const payload = {
         date: document.getElementById('handoverDate').value,
-        cycle_number: parseInt(document.getElementById('handoverCycle').value) || 3,
+        cycle_number: 3,
         handover_to: document.getElementById('handoverTo').value,
         amount: parseFloat(document.getElementById('handoverAmount').value) || 0,
         notes: document.getElementById('handoverNotes').value
@@ -1741,7 +2046,7 @@
         const result = await res.json();
         if (result.success) {
           closeHandoverModal();
-          alert(`✅ Handover of Rs. ${payload.amount.toLocaleString()} to ${payload.handover_to} logged successfully!`);
+          alert(`✅ Handover of Rs. ${payload.amount.toLocaleString()} logged to Dad!`);
           await loadInitialData();
         } else {
           alert('Error: ' + result.error);
@@ -1749,276 +2054,6 @@
       } catch (e) {
         alert('Network error: ' + e);
       }
-    }
-
-    // -------------------------------------------------------------------------
-    // AI BILL & RECEIPT VISION SCANNER (GEMINI 2.5 FLASH)
-    // -------------------------------------------------------------------------
-    let currentSelectedBillFile = null;
-    let currentExtractedBillData = null;
-
-    function handleBillFileSelected(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      currentSelectedBillFile = file;
-      document.getElementById('selectedFileName').innerText = `📄 ${file.name} (${Math.round(file.size / 1024)} KB)`;
-      document.getElementById('scanBillBtn').disabled = false;
-    }
-
-    async function uploadAndParseBill() {
-      if (!currentSelectedBillFile) {
-        alert('Please select a receipt photo first.');
-        return;
-      }
-
-      const targetDate = document.getElementById('billTargetDate').value || new Date().toISOString().split('T')[0];
-      const formData = new FormData();
-      formData.append('receipt_image', currentSelectedBillFile);
-      formData.append('target_date', targetDate);
-
-      const spinner = document.getElementById('billLoadingSpinner');
-      const container = document.getElementById('billResultContainer');
-      const badge = document.getElementById('billStatusBadge');
-      const btn = document.getElementById('scanBillBtn');
-
-      spinner.classList.remove('hidden');
-      container.classList.add('hidden');
-      btn.disabled = true;
-      badge.innerText = 'Analyzing with Gemini...';
-      badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse';
-
-      try {
-        const res = await fetch('/api/bills/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          currentExtractedBillData = data;
-          renderExtractedBill(data);
-        } else {
-          alert('Failed to parse bill: ' + (data.error || 'Unknown error'));
-          badge.innerText = 'Parse Error';
-          badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20';
-        }
-      } catch (err) {
-        alert('Upload failed: ' + err);
-        badge.innerText = 'Network Error';
-      } finally {
-        spinner.classList.add('hidden');
-        container.classList.remove('hidden');
-        btn.disabled = false;
-      }
-    }
-
-    function renderExtractedBill(data) {
-      const p = data.parsed;
-      const badge = document.getElementById('billStatusBadge');
-      if (p.verification_status === 'VERIFIED') {
-        badge.innerText = '✅ VERIFIED BY AI';
-        badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      } else {
-        badge.innerText = '⚠️ MATH NEEDS REVIEW';
-        badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      }
-
-      let lineItemsHtml = '';
-      if (p.line_items && p.line_items.length > 0) {
-        lineItemsHtml = `
-          <div class="border border-slate-800 rounded-xl overflow-hidden mt-3">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-dark-800 text-slate-400 font-bold uppercase">
-                <tr>
-                  <th class="py-2 px-3">Item Description</th>
-                  <th class="py-2 px-3 text-center">Qty</th>
-                  <th class="py-2 px-3 text-right">Unit Price</th>
-                  <th class="py-2 px-3 text-right">Line Total</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
-                ${p.line_items.map(it => `
-                  <tr>
-                    <td class="py-1.5 px-3 font-semibold text-white">${it.item_name}</td>
-                    <td class="py-1.5 px-3 text-center">${it.quantity}</td>
-                    <td class="py-1.5 px-3 text-right">Rs. ${it.unit_price}</td>
-                    <td class="py-1.5 px-3 text-right font-bold text-emerald-400">Rs. ${it.total_price}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
-      }
-
-      const container = document.getElementById('billResultContainer');
-      container.innerHTML = `
-        <div class="space-y-4">
-          <!-- TOP SUMMARY WITH THUMBNAIL -->
-          <div class="flex gap-4 p-4 rounded-xl bg-dark-850 border border-slate-800 items-start">
-            <img src="${data.image_url}" onclick="openReceiptModal('${data.image_url}')" class="w-20 h-24 object-cover rounded-lg border border-slate-700 cursor-pointer hover:scale-105 transition shadow">
-            <div class="flex-1 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-xs uppercase font-extrabold text-amber-400 font-mono">${p.bill_type}</span>
-                <span class="text-[11px] text-slate-400 font-mono">Confidence: ${Math.round(p.confidence_score * 100)}%</span>
-              </div>
-              <div class="text-base font-bold text-white">${p.vendor_name}</div>
-              <div class="text-xs text-slate-300">${p.summary_note || 'Verified receipt'}</div>
-              <div class="text-[11px] text-brand-400 font-mono pt-1">
-                Sum of Items: Rs. ${p.calculated_sum.toLocaleString()} | Bill Total: Rs. ${p.total_amount.toLocaleString()}
-              </div>
-            </div>
-          </div>
-
-          <!-- EDITABLE VERIFICATION FIELDS -->
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <label class="block font-bold uppercase text-slate-400 mb-1">Vendor / Supplier Name</label>
-              <input type="text" id="confirmVendor" value="${p.vendor_name}" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 font-semibold">
-            </div>
-            <div>
-              <label class="block font-bold uppercase text-slate-400 mb-1">Bill Date</label>
-              <input type="date" id="confirmDate" value="${p.bill_date || data.target_date}" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2 font-mono">
-            </div>
-            <div>
-              <label class="block font-bold uppercase text-slate-400 mb-1">Total Bill Amount (Rs.)</label>
-              <input type="number" id="confirmAmount" value="${p.total_amount}" class="w-full bg-dark-800 border-2 border-emerald-500/50 text-emerald-300 text-base font-bold rounded-lg p-2 font-mono">
-            </div>
-            <div>
-              <label class="block font-bold uppercase text-slate-400 mb-1">Expense Category</label>
-              <select id="confirmCategory" class="w-full bg-dark-800 border border-slate-700 text-white rounded-lg p-2">
-                <option ${p.suggested_category === 'Chicken & Meat' ? 'selected' : ''}>Chicken & Meat</option>
-                <option ${p.suggested_category === 'Morning Delivery Cash' ? 'selected' : ''}>Morning Delivery Cash</option>
-                <option ${p.suggested_category === 'Packaging & Supplies' ? 'selected' : ''}>Packaging & Supplies</option>
-                <option ${p.suggested_category === 'Fuel & Transport' ? 'selected' : ''}>Fuel & Transport</option>
-                <option ${p.suggested_category === 'Utilities & Gas' ? 'selected' : ''}>Utilities & Gas</option>
-                <option ${p.suggested_category === 'Store Maintenance' ? 'selected' : ''}>Store Maintenance</option>
-                <option ${p.suggested_category === 'Groceries & Spices' ? 'selected' : ''}>Groceries & Spices</option>
-                <option ${p.suggested_category === 'Other Expenses' ? 'selected' : ''}>Other Expenses</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <label class="block font-bold uppercase text-slate-400 mb-1">Payment Envelope Source</label>
-              <select id="confirmPaymentSource" class="w-full bg-dark-800 border border-slate-700 text-brand-300 font-semibold rounded-lg p-2">
-                <option ${p.suggested_payment_source === 'Master Reserve' ? 'selected' : ''}>Master Reserve</option>
-                <option ${p.suggested_payment_source === 'Morning Cash Envelope' ? 'selected' : ''}>Morning Cash Envelope</option>
-                <option ${p.suggested_payment_source === 'Direct Till' ? 'selected' : ''}>Direct Till</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold uppercase text-slate-400 mb-1">Audit Notes</label>
-              <input type="text" id="confirmNotes" value="${p.summary_note || ''}" class="w-full bg-dark-800 border border-slate-700 text-slate-300 rounded-lg p-2">
-            </div>
-          </div>
-
-          ${lineItemsHtml}
-
-          <!-- CONFIRM ACTION BUTTON -->
-          <button onclick="commitVerifiedBill('${data.image_url}')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 text-sm">
-            <i class="fa-solid fa-check-double"></i> Confirm & Commit to Shift Expenses (Rs. ${p.total_amount.toLocaleString()})
-          </button>
-        </div>
-      `;
-    }
-
-    async function commitVerifiedBill(imageUrl) {
-      const payload = {
-        date: document.getElementById('confirmDate').value,
-        vendor_name: document.getElementById('confirmVendor').value,
-        amount: parseFloat(document.getElementById('confirmAmount').value) || 0,
-        category: document.getElementById('confirmCategory').value,
-        payment_source: document.getElementById('confirmPaymentSource').value,
-        notes: document.getElementById('confirmNotes').value,
-        image_path: imageUrl,
-        auto_update_shift: true
-      };
-
-      try {
-        const res = await fetch('/api/bills/confirm', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        if (result.success) {
-          alert(`✅ Bill from ${payload.vendor_name} (Rs. ${payload.amount.toLocaleString()}) verified and committed to shift ${payload.date}!\nCash Flow and Master Reserve updated.`);
-          document.getElementById('billFileInput').value = '';
-          currentSelectedBillFile = null;
-          document.getElementById('selectedFileName').innerText = 'No file selected';
-          document.getElementById('scanBillBtn').disabled = true;
-          document.getElementById('billStatusBadge').innerText = 'Awaiting Photo';
-          document.getElementById('billStatusBadge').className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-dark-800 text-slate-400 border border-slate-700';
-          document.getElementById('billResultContainer').innerHTML = `
-            <div class="p-8 rounded-xl bg-dark-850 border border-slate-800 text-xs text-emerald-400 text-center font-bold">
-              ✅ Bill committed successfully to shift ${payload.date}! Ready for next photo.
-            </div>
-          `;
-          await loadInitialData();
-          await loadBillsHistory();
-        } else {
-          alert('Error committing bill: ' + result.error);
-        }
-      } catch (err) {
-        alert('Network error: ' + err);
-      }
-    }
-
-    async function loadBillsHistory() {
-      try {
-        const res = await fetch('/api/bills/history');
-        const rows = await res.json();
-        const tbody = document.getElementById('scannedBillsTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        rows.forEach(r => {
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-dark-800/40';
-          tr.innerHTML = `
-            <td class="py-2.5 px-3 font-semibold text-white">${r.date}</td>
-            <td class="py-2.5 px-3 text-slate-200 font-bold">${r.supplier_name}</td>
-            <td class="py-2.5 px-3 text-slate-400">${r.category}</td>
-            <td class="py-2.5 px-3 text-emerald-400 font-bold">Rs. ${r.amount.toLocaleString()}</td>
-            <td class="py-2.5 px-3 text-brand-300 font-semibold">${r.payment_source}</td>
-            <td class="py-2.5 px-3 text-slate-400 text-xs max-w-xs truncate">${r.receipt_note || ''}</td>
-            <td class="py-2.5 px-3 text-center">
-              ${r.image_path ? `
-                <button onclick="openReceiptModal('${r.image_path}')" class="px-2 py-1 bg-dark-800 hover:bg-dark-700 text-brand-400 rounded border border-slate-700 text-[11px] font-sans">
-                  <i class="fa-solid fa-eye"></i> View
-                </button>
-              ` : '<span class="text-slate-600">—</span>'}
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (e) {
-        console.error('Failed to load bills history', e);
-      }
-    }
-
-    function openReceiptModal(url) {
-      let modal = document.getElementById('receiptPreviewModal');
-      if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'receiptPreviewModal';
-        modal.className = 'fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4';
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-        document.body.appendChild(modal);
-      }
-      modal.innerHTML = `
-        <div class="relative bg-dark-900 border border-slate-700 rounded-2xl max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl p-4 flex flex-col">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-            <span class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-receipt text-amber-400"></i> Original Receipt Image</span>
-            <button onclick="document.getElementById('receiptPreviewModal').remove()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div class="p-2 overflow-auto flex-1 flex items-center justify-center">
-            <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow">
-          </div>
-        </div>
-      `;
     }
   </script>
 </body>

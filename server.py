@@ -324,12 +324,36 @@ async def handle_create_or_update_shift(request: web.Request) -> web.Response:
         conn.close()
 
 
+def recalculate_master_reserve_chain(conn: sqlite3.Connection) -> None:
+    """
+    Recalculates running Master Reserve balance sequentially across all dates,
+    accounting for handovers, resets, supplier payments, and ad-hoc expenses.
+    Ensures mathematical ledger invariants across edits.
+    """
+    shifts = conn.execute("SELECT id, date, daily_net_to_reserve, other_purchases_out, status FROM daily_shifts ORDER BY date ASC").fetchall()
+    handovers = {h["date"]: h["amount"] for h in conn.execute("SELECT date, amount FROM cash_envelope_handovers").fetchall()}
+    
+    running_reserve = 0.0
+    for s in shifts:
+        s_date = s["date"]
+        # If this is a handover reset row
+        if "Reset" in s_date or s["status"] == "Settlement_Reset":
+            handover_amt = handovers.get(s_date.split()[0], abs(float(s["daily_net_to_reserve"])))
+            running_reserve = max(0.0, running_reserve - handover_amt)
+            conn.execute("UPDATE daily_shifts SET master_reserve_balance = ? WHERE id = ?", (running_reserve, s["id"]))
+            continue
+
+        net_add = float(s["daily_net_to_reserve"])
+        running_reserve += net_add
+        conn.execute("UPDATE daily_shifts SET master_reserve_balance = ? WHERE id = ?", (running_reserve, s["id"]))
+
+
 @routes.post("/api/shifts/{id}/reconcile")
 async def handle_reconcile_shift(request: web.Request) -> web.Response:
     """
     Executes end-of-shift till cash reconciliation.
     Records actual physical cash count, calculates variance, envelope buffers,
-    and updates Master Reserve balance atomically.
+    and updates Master Reserve balance atomically with chain recalculation.
     """
     shift_id = request.match_info["id"]
     try:
@@ -351,29 +375,22 @@ async def handle_reconcile_shift(request: web.Request) -> web.Response:
                 return web.json_response({"error": "Shift not found"}, status=404)
 
             logged_rev = float(shift["total_gross_revenue"])
-            # Till variance = actual cash in minus logged sales revenue
             variance = actual_cash_in - logged_rev
-
-            # Daily net to reserve = Actual Cash In - Morning Suppliers Out - Helper Wage - Other Purchases
             daily_net_to_reserve = actual_cash_in - morning_sup - helper_wage - other_out
 
-            # Fetch previous shift's master reserve balance
-            prev_shift = conn.execute("""
-                SELECT master_reserve_balance FROM daily_shifts 
-                WHERE date < ? ORDER BY date DESC LIMIT 1
-            """, (shift["date"],)).fetchone()
-            prev_balance = float(prev_shift["master_reserve_balance"]) if prev_shift and prev_shift["master_reserve_balance"] is not None else 0.0
-
-            new_master_balance = prev_balance + daily_net_to_reserve
-
-            # Update shift record
             conn.execute("""
                 UPDATE daily_shifts
                 SET actual_till_cash_in = ?, till_variance = ?, morning_suppliers_out = ?,
                     helper_wage_out = ?, other_purchases_out = ?, daily_net_to_reserve = ?,
-                    master_reserve_balance = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+                    notes = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
-            """, (actual_cash_in, variance, morning_sup, helper_wage, other_out, daily_net_to_reserve, new_master_balance, notes, shift_id))
+            """, (actual_cash_in, variance, morning_sup, helper_wage, other_out, daily_net_to_reserve, notes, shift_id))
+
+            # Recalculate running balance across all shifts
+            recalculate_master_reserve_chain(conn)
+
+            updated = conn.execute("SELECT master_reserve_balance FROM daily_shifts WHERE id = ?", (shift_id,)).fetchone()
+            new_master_balance = float(updated["master_reserve_balance"]) if updated else 0.0
 
         return web.json_response({
             "success": True,
@@ -875,7 +892,7 @@ async def handle_confirm_bill(request: web.Request) -> web.Response:
                         new_other = current_other + amount
 
                     new_net_reserve = actual_cash - new_morning - helper_wage - new_other
-                    updated_notes = f"{shift_notes} | {vendor} ({amount:,.0f})" if shift_notes else f"{vendor} ({amount:,.0f})"
+                    updated_notes = f"{shift_notes} | {vendor} (Rs. {amount:,.0f})" if shift_notes else f"{vendor} (Rs. {amount:,.0f})"
 
                     conn.execute("""
                         UPDATE daily_shifts 
@@ -883,6 +900,20 @@ async def handle_confirm_bill(request: web.Request) -> web.Response:
                             daily_net_to_reserve = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
                         WHERE id = ?
                     """, (new_morning, new_other, new_net_reserve, updated_notes, shift_id))
+                else:
+                    # Create placeholder shift if none exists yet
+                    is_morning = "Morning" in source
+                    new_morning = amount if is_morning else 0.0
+                    new_other = 0.0 if is_morning else amount
+                    conn.execute("""
+                        INSERT INTO daily_shifts (
+                            date, status, morning_suppliers_out, other_purchases_out,
+                            daily_net_to_reserve, notes
+                        ) VALUES (?, 'Active', ?, ?, ?, ?)
+                    """, (bill_date, new_morning, new_other, -amount, f"Receipt: {vendor} (Rs. {amount:,.0f})"))
+
+                # Recompute reserve chain
+                recalculate_master_reserve_chain(conn)
 
         return web.json_response({
             "success": True,
