@@ -1,0 +1,66 @@
+[
+  [
+    "",
+    "SUMIYURU CATERING • OPERATIONAL PLAYBOOK \u0026 DAILY ACTION PROTOCOLS"
+  ],
+  [
+    "",
+    "📋 DAILY OPERATIONAL PLAYBOOK \u0026 SUPPLIER RULES"
+  ],
+  [
+    "",
+    "Priority",
+    "Category",
+    "Operational Rule \u0026 Action Instructions",
+    "Target Impact",
+    "Status"
+  ],
+  [
+    "",
+    "HIGH",
+    "Weekly Rest Day",
+    "Close stall every Tuesday (Day-of-Week analysis: lowest sales Rs. 15,547 \u0026 peak wastage of 58 short eats)",
+    "Eliminates ~10.4% weekly food waste \u0026 saves overheads",
+    "Active"
+  ],
+  [
+    "",
+    "HIGH",
+    "Supplier Order (Delish)",
+    "Stock Delish Theti Paan at 5 units on weekdays; scale to 8–10 units on peak weekend shifts (100% sell-through)",
+    "Adds ~Rs. 600–1,200/day high-margin bread revenue without stockouts",
+    "Active"
+  ],
+  [
+    "",
+    "HIGH",
+    "Supplier Order (Nishan)",
+    "Strict par cap for Nishan Buns: max 10–12 units on slow weekdays; cap at 20–25 units on Fri/Sat (curb 20+ bun waste)",
+    "Stops chronic bun leftovers and protects cash margin",
+    "Active"
+  ],
+  [
+    "",
+    "MEDIUM",
+    "Kitchen Prep",
+    "Keep Egg Cutlets at 15-20/day (97.7% sell-through, Rs. 30 profit per cutlet)",
+    "Protects highest individual unit margin",
+    "Active"
+  ],
+  [
+    "",
+    "INFO",
+    "Weather / Poya",
+    "On Poya days, only stock Delish Bread/Roast Paan + Kitchen Rice \u0026 Cutlets (100% sell-out model)",
+    "Ensures zero waste during holiday shifts",
+    "Verified"
+  ],
+  [
+    "",
+    "SUMMARY",
+    "Operating Protocol",
+    "Follow par levels daily. Reconcile till cash at 9:30 PM closing directly against Daily_Cash_Commit_Log.",
+    "100% Physical Cash Integrity",
+    "Routine"
+  ]
+]

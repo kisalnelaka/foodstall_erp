@@ -1,0 +1,186 @@
+[
+  [
+    "",
+    "SUMIYURU CATERING • INVENTORY DEMAND OPTIMIZER \u0026 PAR TARGETS"
+  ],
+  [
+    "",
+    "TOP SELL-THROUGH ITEM",
+    "",
+    "PEAK VOLUME LEADER",
+    "",
+    "HIGHEST MARGIN STAR",
+    "",
+    "PAR RESTOCK PRIORITY"
+  ],
+  [
+    "",
+    "Roast Paan \u0026 Toast Bread",
+    "",
+    "52 Units / Day",
+    "",
+    "Egg Cutlet (Rs. 30 Margin)",
+    "",
+    "Delish Roast Paan +10/day"
+  ],
+  [
+    "",
+    "100.0% Perfect Sell-Out Rate",
+    "",
+    "Delish Roast Paan (Poya Peak)",
+    "",
+    "97.7% Sell-Through (15-20/day)",
+    "",
+    "Immediate bump from 45 to 50-55"
+  ],
+  [],
+  [],
+  [
+    "",
+    "🥖 SMART INVENTORY \u0026 DAY-OF-WEEK DEMAND PREDICTOR"
+  ],
+  [
+    "",
+    "Item_ID",
+    "Supplier",
+    "Avg Daily Sold",
+    "Peak Sold",
+    "Sell-Through %",
+    "Mon-Wed Target",
+    "Thu-Sat (Peak) Target",
+    "Sun / Poya Target",
+    "Inventory Action Signal"
+  ],
+  [
+    "",
+    "Roast Paan",
+    "Delish",
+    "43.8",
+    "52",
+    "100.0%",
+    "45",
+    "50 - 55",
+    "55",
+    "🔥 100% SOLD OUT ALL 7 DAYS — Increase daily order to 50+!"
+  ],
+  [
+    "",
+    "Bread",
+    "Delish",
+    "18",
+    "20",
+    "99.2%",
+    "18",
+    "18 - 20",
+    "18",
+    "✅ Optimal (97.6% sell-through) — Hold steady at 18-20"
+  ],
+  [
+    "",
+    "Bakery Buns",
+    "Delish",
+    "15.6",
+    "29",
+    "91.9%",
+    "18",
+    "18 - 20",
+    "0",
+    "📈 15/day sold out 4 days straight — Bump slightly to 18"
+  ],
+  [
+    "",
+    "Mix Fried Rice w/ Leg",
+    "In-House Kitchen",
+    "11.3",
+    "17",
+    "89.9%",
+    "12 - 15",
+    "16 - 17 (Thu/Fri)",
+    "12",
+    "⚠️ Non-returnable! Prep 16-17 on Thu/Fri; cap Tue/Sat at 12-14 to avoid waste"
+  ],
+  [
+    "",
+    "Egg Cutlet",
+    "In-House Kitchen",
+    "9.1",
+    "20",
+    "65.2%",
+    "15",
+    "20 - 25",
+    "15",
+    "🔥 High-Margin Star (97.7% sold) — Prep 20+ on Thu/Fri/Sat"
+  ],
+  [
+    "",
+    "Small Cutlet",
+    "In-House Kitchen",
+    "9.2",
+    "16",
+    "97.9%",
+    "8",
+    "10",
+    "6",
+    "✅ Steady mover — Prep 8-10 daily"
+  ],
+  [
+    "",
+    "Nishan Buns",
+    "Nishan",
+    "19.8",
+    "46",
+    "75.2%",
+    "10 - 12",
+    "20 - 25",
+    "0",
+    "⚠️ High waste risk! Cap Tue at 10-12, scale Fri to 25; curb Sat order to avoid leftover waste"
+  ],
+  [
+    "",
+    "Toast Bread",
+    "Nishan",
+    "20",
+    "27",
+    "96.1%",
+    "12 - 15",
+    "20 - 25",
+    "0",
+    "🔥 100% SOLD OUT ALL 6 DAYS — Increase from 10 to 15-25!"
+  ],
+  [
+    "",
+    "String Hoppers",
+    "Hoppers",
+    "9.7",
+    "10",
+    "96.7%",
+    "10",
+    "10 - 12",
+    "0",
+    "✅ 10 packs/day is the exact sweet spot (91.7% sold)"
+  ],
+  [
+    "",
+    "Dosa \u0026 Parata",
+    "Nishan",
+    "2 each",
+    "3 each",
+    "95.0%",
+    "2 each",
+    "3 each",
+    "0",
+    "✅ Keep at 2-3 packs each daily"
+  ],
+  [
+    "",
+    "Theti Paan",
+    "Delish",
+    "5",
+    "5",
+    "100.0%",
+    "5",
+    "8 - 10",
+    "5",
+    "🔥 New Delish launch — 100% sold out! Expand daily order to 8-10 units"
+  ]
+]
